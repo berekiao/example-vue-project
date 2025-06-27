@@ -1,4 +1,4 @@
-import client from '@/services/';
+import client from '@/http/request';
 
 const state = () => ({
     all: [],
@@ -22,17 +22,17 @@ const mutations = {
 const actions = {
 
     async getAll(cxt) {
-        let data = await client.get('posts');
+        let data = await client.get('clients');
         cxt.commit("SET_ALL", data.data);
         return data;
     },
     async getOne(cxt, id) {
-        let data = await client.get('posts/' + id);
+        let data = await client.get('clients/' + id);
         cxt.commit("SET_ONE", data.data);
         return data;
     },
     async create(cxt, payload) {
-        let { data } = payload.id ? await client.put('posts/' + payload.id, payload) : await client.post('posts', payload);
+        let { data } = payload.id ? await client.put('clients/' + payload.id, payload) : await client.post('clients', payload);
         cxt.commit("SET_ONE", data);
         if (payload.id) {
             payload.id = null;
@@ -40,7 +40,7 @@ const actions = {
         return data;
     },
     async del(cxt, id) {
-        let { data } = await client.delete('posts/'+id);
+        let { data } = await client.delete('clients/'+id);
         cxt.commit("SET_ONE", data);
         return data;
     },

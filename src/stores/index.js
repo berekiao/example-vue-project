@@ -1,8 +1,10 @@
 import { createStore } from 'vuex';
-import post from './modules/post'; 
+import clients from './modules/clients'; 
+import user from './modules/user';
 
 export default createStore({
   modules: {
-    post
+    clients,
+    user
   }
 });

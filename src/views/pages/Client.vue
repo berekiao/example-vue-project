@@ -17,30 +17,29 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="mb-3">
-                                        <label for="nom" class="form-label">Nom & Prénom</label>
-                                        <input type="text" class="form-control" id="nom" placeholder="Nom & Prénom">
+                                        <label for="nom" class="form-label">Nom</label>
+                                        <input type="text" class="form-control" v-model="form.nom" id="nom" placeholder="Nom & Prénom">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="contact" class="form-label">Contact</label>
+                                        <label for="contact" class="form-label">Prénoms</label>
                                         <input type="text" class="form-control" id="contact"
-                                            placeholder="Numéro de téléphone">
+                                            placeholder="Numéro de téléphone" v-model="form.prenom">
                                     </div>
+                                    
                                     <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" placeholder="Adresse email">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="structure" class="form-label">Structure</label>
+                                        <label for="structure" class="form-label">Contact</label>
                                         <input type="text" class="form-control" id="structure"
-                                            placeholder="Nom de la structure">
+                                            placeholder="Nom de la structure" v-model="form.telephone">
                                     </div>
+
                                     <div class="mb-3">
                                         <label for="statut" class="form-label">Statut</label>
-                                        <select class="form-control" id="statut">
-                                            <option value="actif">Actif</option>
-                                            <option value="inactif">Inactif</option>
+                                        <select class="form-control" v-model="form.statut" id="statut">
+                                            <option value="ACTIF">Actif</option>
+                                            <option value="INACTIF">Inactif</option>
                                         </select>
                                     </div>
+
                                 </div>
 
                             </div>
@@ -50,7 +49,7 @@
                         <div class="text-center mx-auto">
                             <button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i
                                     class="bi-x"></i>Fermer</button>
-                            <button type="button" class="btn btn-primary ms-2"><i class="bi-check"></i>Ajouter</button>
+                            <button type="button" class="btn btn-primary ms-2" @click="addClient"><i class="bi-check"></i>Ajouter</button>
                         </div>
                     </div>
                 </div>
@@ -196,29 +195,134 @@
     </div>
 </template>
 
+
 <script>
+import { mapActions, mapGetters } from "vuex";
+
+
 export default {
-    setup() {
-        const openModal = () => {
+    components: {
+        
+    },
+    name: 'clients',
+    props: {
+        msg: String
+    },
+    data: () => ({
+        page: 0,
+        visibleAdd: false,
+        form: {},
+
+    }),
+    computed: {
+        ...mapGetters({ items: 'clients/all' }),
+        filterItems() {
+            return this.items?.content || [];
+        },
+/*         user() {
+            return JSON.parse(localStorage.getItem('user'));
+        }, */
+
+    },
+    methods: {
+        resetForm() {
+            this.role = {},
+                this.openModal();
+        },
+        openModal() {
             // Déplacer le modal 
             document.body.appendChild(document.getElementById('postModal'));
 
             // Ouvrir le modal
             const modal = new bootstrap.Modal(document.getElementById('postModal'));
             modal.show();
+        },
+        closeModal() {
+            // Récupérer le modal
+            const modalElement = document.getElementById('postModal');
+
+            // Créer un gestionnaire d'événements pour l'événement "hidden.bs.modal"
+            const hiddenHandler = () => {
+                // Masquer manuellement le backdrop
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.style.display = 'none';
+                }
+            };
+
+            // Ajouter l'événement "hidden.bs.modal"
+            modalElement.addEventListener('hidden.bs.modal', hiddenHandler);
+
+            // Fermer le modal
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+
+        },
+        onSearch(offset) {
+            if (offset > 0) this.page = offset;
+            this.$router.push({ query: this.page }).catch(() => { });
+            this.$store.dispatch('clients/getAll', this.page)
+                .then((response) => {
+                    //console.log('Réponse API complète :', response);
+                })
+                
+        },
+
+        async addClient() {
+            try {
+    
+                const response = await this.$store.dispatch('clients/create', this.form);
+                this.$toast.open({
+                    type: "success",
+                    message: "Opération fait avec succès",
+                    position: "top-right",
+                });
+            } catch (error) {
+                console.error('Erreur lors de l\'ajout de l\'élément role :', error);
+                this.$toast.open({
+                    type: "error",
+                    message: "Echec de l'ajout",
+                    position: "top-right",
+                });
+            } finally {
+                ;
+            }
+        },
+        /* restore() {
+            this.role = {};
+        },
+        async deleteRole(roleId) {
+            try {
+                const response = await this.$store.dispatch('banque/del', roleId);
+                this.onSearch();
+
+            } catch (error) {
+                console.error('Erreur lors de la suppression de l\'élément role :', error);
+            }
+        },
+        async updateRole(role) {
+            this.role.id = role.id;
+            this.role = role
+            this.openModal()
+        }, */
+
+    },
+    created() {
+        let loaders = document.getElementsByClassName("loading-screen");
+        if (loaders.length > 0) {
+            loaders[0].style.zIndex = 30000000;
         }
+        this.onSearch();
+    },
+    mounted() {
+        let menuToggle = document.getElementById('menu-toggle');
 
-        // Function to handle adding a new post
-        const addPost = () => {
-            // Logic to add a new post goes here
-            console.log("New post added");
-        };
-
-        return {
-            addPost
-        };
+        if (menuToggle) {
+            menuToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.$emit('toggleSidebar');
+            });
+        }
     }
 }
 </script>
-
-<style lang="scss" scoped></style>

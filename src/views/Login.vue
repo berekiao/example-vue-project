@@ -18,13 +18,14 @@
                                     </div>
                                     <form class="user">
                                         <div class="form-group">
-                                            <input type="email" class="form-control form-control-user"
-                                                id="exampleInputEmail" aria-describedby="emailHelp"
-                                                placeholder="Enter Email Address...">
+                                            <input type="text" v-model="form.usernameOrEmail"
+                                                class="form-control form-control-user" id="exampleInputPassword"
+                                                placeholder="Email or Username">
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Password">
+                                            <input type="password" v-model="form.password"
+                                                class="form-control form-control-user" id="exampleInputPassword"
+                                                placeholder="Password">
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
@@ -33,9 +34,9 @@
                                                     Me</label>
                                             </div>
                                         </div>
-                                        <router-link to="/dashboard" class="btn btn-primary btn-user btn-block">
+                                        <button @click.prevent="connexion" class="btn btn-primary btn-user btn-block">
                                             Login
-                                        </router-link>
+                                        </button>
                                         <hr>
                                         <a href="index.html" class="btn btn-danger btn-user btn-block">
                                             <i class="fab fa-google fa-fw"></i> Login with Google
@@ -66,8 +67,40 @@
 </template>
 
 <script>
-export default {
+import { ElMessage, ElNotification } from "element-plus";
 
+export default {
+    data() {
+        return {
+            form: {
+                usernameOrEmail: "",
+                password: "",
+            },
+        };
+    },
+    methods: {
+        async connexion() {
+            try {
+                const response = await this.$store.dispatch("user/login", this.form);
+                const result = response;
+
+                if (result) {
+                    localStorage.setItem("userConnected", JSON.stringify(result));
+                    this.$router.push("/dashboard");
+                    ElMessage({
+                        message:
+                            "Connexion réussie.",
+                        type: "success",
+                    });
+                }
+            } catch (error) {
+                ElMessage({
+                    message: "Connexion echouée. Veuillez verifier vos identifiants",
+                    type: "error",
+                });
+            }
+        },
+    },
 }
 </script>
 
