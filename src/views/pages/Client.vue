@@ -5,33 +5,31 @@
             aria-hidden="true" style="backdrop-filter: blur(10px);">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0">
-
                     <div class="modal-header border-0 pb-0 align-items-start">
                         <h5 class="mb-0" id="sousLabel">Client</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
-                    <div class="modal-body ">
+                    <div class="modal-body">
                         <form>
                             <div class="row">
                                 <div class="col-12">
                                     <div class="mb-3">
                                         <label for="nom" class="form-label">Nom</label>
-                                        <input type="text" class="form-control" v-model="form.nom" id="nom" placeholder="Nom & Prénom">
+                                        <input type="text" class="form-control" v-model="form.nom" id="nom"
+                                            placeholder="Nom & Prénom">
                                     </div>
                                     <div class="mb-3">
                                         <label for="contact" class="form-label">Prénoms</label>
-                                        <input type="text" class="form-control" id="contact"
-                                            placeholder="Numéro de téléphone" v-model="form.prenom">
+                                        <input type="text" class="form-control" id="contact" placeholder="Prénom"
+                                            v-model="form.prenom">
                                     </div>
-                                    
                                     <div class="mb-3">
                                         <label for="structure" class="form-label">Contact</label>
-                                        <input type="text" class="form-control" id="structure"
-                                            placeholder="Nom de la structure" v-model="form.telephone">
+                                        <input type="text" class="form-control" id="structure" placeholder="Téléphone"
+                                            v-model="form.telephone">
                                     </div>
-
                                     <div class="mb-3">
                                         <label for="statut" class="form-label">Statut</label>
                                         <select class="form-control" v-model="form.statut" id="statut">
@@ -39,27 +37,29 @@
                                             <option value="INACTIF">Inactif</option>
                                         </select>
                                     </div>
-
                                 </div>
-
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer border-0 pt-0">
                         <div class="text-center mx-auto">
-                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i
-                                    class="bi-x"></i>Fermer</button>
-                            <button type="button" class="btn btn-primary ms-2" @click="addClient"><i class="bi-check"></i>Ajouter</button>
+                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i class="bi-x"></i>
+                                Fermer</button>
+                            <button type="button" class="btn btn-primary ms-2" @click="addClient" :disabled="loading">
+                                <i class="bi-check"></i> Ajouter
+                                <span v-if="loading" class="spinner-border spinner-border-sm ms-2"></span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Clients</h1>
-            <a href="#" data-toggle="modal" data-target="#postModal"
+            <a @click="openModal" href="#"
                 class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"> Nouveau Client</a>
         </div>
 
@@ -106,85 +106,32 @@
                                 <th>Nº</th>
                                 <th>Nom & Prénom</th>
                                 <th>Contact </th>
-                                <th>Email </th>
-                                <th>Structure</th>
                                 <th>Statut</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
+
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Tiger Nixon</td>
-                                <td>0190332211</td>
-                                <td>tigernixon@yop.com</td>
-                                <td>FEDAY</td>
+                            <tr v-for="(item, index) in items" :key="index">
+                                <td> {{ index + 1 }}</td>
+                                <td>{{ item?.nom }} {{ item?.prenom }}</td>
+                                <td>{{ item?.telephone }}</td>
                                 <td>
-                                    <span class="badge badge-success">Actif</span>
+                                    <span class="badge badge-success" v-if="item?.statut">{{ item?.statut }}</span>
+                                    <span class="badge badge-danger" v-else>{{ item?.statut }}</span>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-primary"><i
-                                                class="fas fa-edit"></i></button>
-                                        <button type="button" class="btn btn-danger"><i
-                                                class="fas fa-trash"></i></button>
+                                        <button type="button" class="btn btn-primary" @click="updateRole(item)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger" @click="deleteRole(item.id)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Garrett Winters</td>
-                                <td>0190332211</td>
-                                <td>tigernixon@yop.com</td>
-                                <td>KOLI</td>
-                                <td>
-                                    <span class="badge badge-danger">Inactif</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-primary"><i
-                                                class="fas fa-edit"></i></button>
-                                        <button type="button" class="btn btn-danger"><i
-                                                class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Ashton Cox</td>
-                                <td>0190332211</td>
-                                <td>tigernixon@yop.com</td>
-                                <td>SOLUT TECH</td>
-                                <td>
-                                    <span class="badge badge-success">Actif</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-primary"><i
-                                                class="fas fa-edit"></i></button>
-                                        <button type="button" class="btn btn-danger"><i
-                                                class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Cedric Kelly</td>
-                                <td>0190332211</td>
-                                <td>tigernixon@yop.com</td>
-                                <td>SOLUTION TECH</td>
-                                <td>
-                                    <span class="badge badge-success">Actif</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-primary"><i
-                                                class="fas fa-edit"></i></button>
-                                        <button type="button" class="btn btn-danger"><i
-                                                class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
+
 
                         </tbody>
                     </table>
@@ -198,30 +145,31 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { ElMessage, ElNotification } from "element-plus";
+import Swal from 'sweetalert2'
 
 
 export default {
     components: {
-        
+
     },
     name: 'clients',
     props: {
         msg: String
     },
     data: () => ({
-        page: 0,
-        visibleAdd: false,
-        form: {},
+        form: {
+            nom: "",
+            prenom: "",
+            telephone: "",
+            statut: "ACTIF"
+        },
+        loading: false,
+        modalInstance: null
 
     }),
     computed: {
         ...mapGetters({ items: 'clients/all' }),
-        filterItems() {
-            return this.items?.content || [];
-        },
-/*         user() {
-            return JSON.parse(localStorage.getItem('user'));
-        }, */
 
     },
     methods: {
@@ -263,66 +211,79 @@ export default {
             this.$router.push({ query: this.page }).catch(() => { });
             this.$store.dispatch('clients/getAll', this.page)
                 .then((response) => {
-                    //console.log('Réponse API complète :', response);
+
                 })
-                
+
         },
 
         async addClient() {
+            this.loading = true;
             try {
-    
-                const response = await this.$store.dispatch('clients/create', this.form);
-                this.$toast.open({
-                    type: "success",
-                    message: "Opération fait avec succès",
-                    position: "top-right",
+                await this.$store.dispatch('clients/create', this.form);
+
+                ElNotification({
+                    title: 'Succès',
+                    message: 'Ajout effectué avec succès.',
+                    type: 'success',
+                    duration: 3000
                 });
+
+                this.closeModal();
+                this.onSearch();
             } catch (error) {
-                console.error('Erreur lors de l\'ajout de l\'élément role :', error);
-                this.$toast.open({
-                    type: "error",
-                    message: "Echec de l'ajout",
-                    position: "top-right",
+                console.error('Erreur lors de l\'ajout du client:', error);
+                ElNotification({
+                    title: 'Erreur',
+                    message: 'Une erreur est survenue lors de l\'ajout.',
+                    type: 'error',
+                    duration: 3000
                 });
             } finally {
-                ;
+                this.loading = false;
             }
         },
-        /* restore() {
-            this.role = {};
-        },
-        async deleteRole(roleId) {
-            try {
-                const response = await this.$store.dispatch('banque/del', roleId);
-                this.onSearch();
 
-            } catch (error) {
-                console.error('Erreur lors de la suppression de l\'élément role :', error);
+        async deleteRole(roleId) {
+            const result = await Swal.fire({
+                title: 'Êtes-vous sûr ?',
+                text: "Cette action est irréversible !",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Oui, supprimer',
+                cancelButtonText: 'Annuler'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    await this.$store.dispatch('clients/del', roleId);
+                    ElNotification({
+                        title: 'Succès',
+                        message: 'Suppression effectuée avec succès.',
+                        type: 'success',
+                        duration: 3000
+                    });
+                    this.onSearch(); // recharge la liste
+                } catch (error) {
+                    console.error('Erreur lors de la suppression :', error);
+                    ElNotification({
+                        title: 'Erreur',
+                        message: 'Impossible de supprimer.',
+                        type: 'error'
+                    });
+                }
             }
         },
-        async updateRole(role) {
-            this.role.id = role.id;
-            this.role = role
-            this.openModal()
-        }, */
+        updateRole(role) {
+            this.form = { ...role };
+            this.openModal();
+        }
 
     },
     created() {
-        let loaders = document.getElementsByClassName("loading-screen");
-        if (loaders.length > 0) {
-            loaders[0].style.zIndex = 30000000;
-        }
         this.onSearch();
     },
-    mounted() {
-        let menuToggle = document.getElementById('menu-toggle');
 
-        if (menuToggle) {
-            menuToggle.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.$emit('toggleSidebar');
-            });
-        }
-    }
 }
 </script>

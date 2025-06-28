@@ -19,7 +19,7 @@
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Livraisons (Total)</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">10 000</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ totalCourses }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -37,7 +37,7 @@
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                     Chiffre d'Affaire</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">2 150 000 XOF</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ totalMontant }} XOF</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -57,11 +57,13 @@
                                 </div>
                                 <div class="row no-gutters align-items-center">
                                     <div class="col-auto">
-                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{
+                                            Math.round((totalLivree / totalCourses) * 100) || 0 }}%</div>
                                     </div>
                                     <div class="col">
                                         <div class="progress progress-sm mr-2">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: 50%"
+                                            <div class="progress-bar bg-info" role="progressbar"
+                                                :style="{ width: ((totalLivree / totalCourses) * 100 || 0) + '%' }"
                                                 aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                                         </div>
                                     </div>
@@ -83,7 +85,7 @@
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                     Livraisons en Cours</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ totalEnCours }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -174,9 +176,8 @@
         <div class="row">
 
             <!-- Content Column -->
-            <div class="col-lg-6 mb-4">
+            <!-- <div class="col-lg-6 mb-4">
 
-                <!-- Project Card Example -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
@@ -211,11 +212,10 @@
                 </div>
 
 
-            </div>
+            </div> -->
 
-            <div class="col-lg-6 mb-4">
+            <!-- <div class="col-lg-6 mb-4">
 
-                <!-- Illustrations -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
@@ -236,21 +236,56 @@
 
 
 
-            </div>
+            </div> -->
         </div>
 
     </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+
 export default {
     name: 'Dashboard',
-    mounted() {
-        // Le code Chart.js ici
+    data() {
+        return {
+            totalCourses: 0,
+            totalMontant: 0,
+            totalLivree: 0,
+            totalEnCours: 0,
+
+            pieData: [], // Pour MOBILE_MONEY vs ESPECES
+
+            // Pour ton line chart mensuel (à adapter selon ton endpoint backend)
+            monthlyData: []
+        }
+    },
+    async mounted() {
+        await this.loadStats();
         this.initChart();
         this.initChart2();
     },
     methods: {
+        ...mapActions('courses', ['getAllStatistique', 'getAllByPaiementType', 'getAllByStatut']),
+        async loadStats() {
+            try {
+                // total courses et montant
+                const stats = await this.getAllStatistique();
+                this.totalCourses = stats.totalCourses;
+                this.totalMontant = stats.totalMontant;
+
+                // par statut
+                const byStatut = await this.getAllByStatut();
+                this.totalLivree = byStatut.find(s => s.statut === 'LIVREE')?.count || 0;
+                this.totalEnCours = byStatut.find(s => s.statut === 'EN_COURS')?.count || 0;
+
+                // pour pie chart
+                this.pieData = await this.getAllByPaiementType();
+
+            } catch (err) {
+                console.error("Erreur chargement stats :", err);
+            }
+        },
         initChart() {
             // Set new default font family and font color to mimic Bootstrap's default styling
             Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';

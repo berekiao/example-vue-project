@@ -55,8 +55,8 @@
                     <h6 class="collapse-header">Référentiel:</h6>
                     <router-link class="collapse-item" to="/dashboard/livreur">Livreurs</router-link>
                     <router-link class="collapse-item" to="/dashboard/moto">Moto</router-link>
-                    <router-link class="collapse-item" to="/dashboard/modepaiement">Mode Paiement</router-link>
-                    <router-link class="collapse-item" to="/dashboard/affectation">Historique Affectation</router-link>
+<!--                     <router-link class="collapse-item" to="/dashboard/modepaiement">Mode Paiement</router-link>
+ -->                    <router-link class="collapse-item" to="/dashboard/affectation">Historique Affectation</router-link>
                 </div>
             </div>
         </li>

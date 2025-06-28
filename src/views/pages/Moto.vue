@@ -8,7 +8,7 @@
 
                     <div class="modal-header border-0 pb-0 align-items-start">
                         <h5 class="mb-0" id="motoLabel">Ajouter une Moto</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
@@ -19,44 +19,33 @@
                                 <div class="col-12">
                                     <div class="mb-3">
                                         <label for="immatriculation" class="form-label">Immatriculation</label>
-                                        <input type="text" class="form-control" id="immatriculation"
+                                        <input type="text" class="form-control" v-model="form.immatriculation" id="immatriculation"
                                             placeholder="Ex : BJ1234AB">
                                     </div>
                                     <div class="mb-3">
                                         <label for="marque" class="form-label">Marque</label>
-                                        <input type="text" class="form-control" id="marque"
+                                        <input type="text" class="form-control" v-model="form.marque" id="marque"
                                             placeholder="Yamaha, Honda...">
                                     </div>
                                     <div class="mb-3">
                                         <label for="modele" class="form-label">Modèle</label>
-                                        <input type="text" class="form-control" id="modele"
+                                        <input type="text" class="form-control" v-model="form.modele" id="modele"
                                             placeholder="CBR500R, XTZ125...">
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="couleur" class="form-label">Couleur</label>
-                                        <input type="text" class="form-control" id="couleur"
-                                            placeholder="Rouge, Noir...">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="kilometrage" class="form-label">Kilométrage</label>
-                                        <input type="number" class="form-control" id="kilometrage"
-                                            placeholder="Ex : 12000 km">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="etat" class="form-label">État</label>
-                                        <select class="form-control" id="etat">
-                                            <option value="bon">Bon</option>
-                                            <option value="moyen">Moyen</option>
-                                            <option value="mauvais">Mauvais</option>
-                                        </select>
-                                    </div>
+                                   
                                     <div class="mb-3">
                                         <label for="statut" class="form-label">Statut</label>
-                                        <select class="form-control" id="statut">
-                                            <option value="disponible">Disponible</option>
-                                            <option value="en_utilisation">En cours d’utilisation</option>
-                                            <option value="en_panne">En panne</option>
+                                        <select class="form-control" id="statut" v-model="form.statut">
+                                            <option value="DISPONIBLE">Disponible</option>
+                                            <option value="EN_COURSE">En cours d’utilisation</option>
+                                            <option value="EN_MAINTENANCE">En panne</option>
+                                            <option value="HORS_SERVICE">En panne</option>
                                         </select>
+                                    </div>
+
+                                    <div>
+                                        <label for="dateMaintenance" class="form-label">Date de maintenance</label>
+                                        <input type="date" class="form-control" v-model="form.dateMaintenance" id="dateMaintenance">
                                     </div>
                                 </div>
                             </div>
@@ -68,7 +57,7 @@
                             <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
                                 <i class="bi-x"></i> Fermer
                             </button>
-                            <button type="button" class="btn btn-primary ms-2">
+                            <button type="button" @click="addMoto" class="btn btn-primary ms-2">
                                 <i class="bi-check"></i> Ajouter
                             </button>
                         </div>
@@ -81,8 +70,7 @@
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Motos</h1>
-            <a href="#" data-toggle="modal" data-target="#motoModal"
-                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <a @click="openModal" href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                 Nouvelle Moto
             </a>
         </div>
@@ -103,15 +91,6 @@
                     <div class="col-md-2">
                         <label for="filterModele" class="form-label">Modèle</label>
                         <input type="text" class="form-control" id="filterModele" placeholder="CBR500R...">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="filterEtat" class="form-label">État</label>
-                        <select class="form-control" id="filterEtat">
-                            <option value="">Tous</option>
-                            <option value="bon">Bon</option>
-                            <option value="moyen">Moyen</option>
-                            <option value="mauvais">Mauvais</option>
-                        </select>
                     </div>
                     <div class="col-md-2">
                         <label for="filterStatut" class="form-label">Statut</label>
@@ -143,93 +122,25 @@
                                 <th>Immatriculation</th>
                                 <th>Marque</th>
                                 <th>Modèle</th>
-                                <th>Couleur</th>
-                                <th>Kilométrage</th>
-                                <th>État</th>
                                 <th>Statut</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>BJ1234AB</td>
-                                <td>Yamaha</td>
-                                <td>XTZ125</td>
-                                <td>Rouge</td>
-                                <td>15 000 km</td>
-                                <td><span class="badge badge-success">Bon</span></td>
-                                <td><span class="badge badge-success">Disponible</span></td>
+                            <tr v-for="(item, index) in items" :key="index">
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ item.immatriculation }}</td>
+                                <td>{{ item.marque }}</td>
+                                <td>{{ item.modele }}</td>
+                                <td>
+                                    <span class="badge badge-success" v-if="item.statut">{{ item.statut }}</span>
+                                </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-primary"><i
+                                        <button type="button" @click="editMoto(item)" class="btn btn-primary"><i
                                                 class="fas fa-edit"></i></button>
-                                        <button type="button" class="btn btn-danger"><i
+                                        <button type="button" @click="deleteMoto(item.id)" class="btn btn-danger"><i
                                                 class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>BJ4321CD</td>
-                                <td>Honda</td>
-                                <td>CBR500R</td>
-                                <td>Bleu</td>
-                                <td>9 000 km</td>
-                                <td><span class="badge badge-warning">Moyen</span></td>
-                                <td><span class="badge badge-secondary">En cours d’utilisation</span></td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>BJ5678EF</td>
-                                <td>Suzuki</td>
-                                <td>GSX150</td>
-                                <td>Noir</td>
-                                <td>5 500 km</td>
-                                <td><span class="badge badge-success">Bon</span></td>
-                                <td><span class="badge badge-success">Disponible</span></td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>BJ8765GH</td>
-                                <td>TVS</td>
-                                <td>Apache RTR</td>
-                                <td>Blanc</td>
-                                <td>12 000 km</td>
-                                <td><span class="badge badge-danger">Mauvais</span></td>
-                                <td><span class="badge badge-danger">En panne</span></td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>BJ9999IJ</td>
-                                <td>KTM</td>
-                                <td>Duke 200</td>
-                                <td>Orange</td>
-                                <td>7 800 km</td>
-                                <td><span class="badge badge-success">Bon</span></td>
-                                <td><span class="badge badge-secondary">En cours d’utilisation</span></td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -244,28 +155,145 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+import { ElMessage, ElNotification } from "element-plus";
+import Swal from 'sweetalert2'
+
+
 export default {
-    setup() {
-        const openModal = () => {
+    components: {
+
+    },
+    name: 'clients',
+    props: {
+        msg: String
+    },
+    data: () => ({
+        form: {
+            marque:	"",
+            modele:	"",
+            immatriculation: "",
+            statut:	"",
+            dateMaintenance : "",
+            statut: "ACTIF"
+        },
+        loading: false,
+        modalInstance: null
+
+    }),
+    computed: {
+        ...mapGetters({ items: 'motos/all' }),
+
+    },
+    methods: {
+        resetForm() {
+            this.role = {},
+                this.openModal();
+        },
+        openModal() {
             // Déplacer le modal 
-            document.body.appendChild(document.getElementById('postModal'));
+            document.body.appendChild(document.getElementById('motoModal'));
 
             // Ouvrir le modal
-            const modal = new bootstrap.Modal(document.getElementById('postModal'));
+            const modal = new bootstrap.Modal(document.getElementById('motoModal'));
             modal.show();
+        },
+        closeModal() {
+            // Récupérer le modal
+            const modalElement = document.getElementById('motoModal');
+
+            // Créer un gestionnaire d'événements pour l'événement "hidden.bs.modal"
+            const hiddenHandler = () => {
+                // Masquer manuellement le backdrop
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.style.display = 'none';
+                }
+            };
+
+            // Ajouter l'événement "hidden.bs.modal"
+            modalElement.addEventListener('hidden.bs.modal', hiddenHandler);
+
+            // Fermer le modal
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+
+        },
+        onSearch(offset) {
+            if (offset > 0) this.page = offset;
+            this.$router.push({ query: this.page }).catch(() => { });
+            this.$store.dispatch('motos/getAll', this.page)
+                .then((response) => {
+
+                })
+
+        },
+        async addMoto() {
+            this.loading = true;
+            try {
+                await this.$store.dispatch('motos/create', this.form);
+
+                ElNotification({
+                    title: 'Succès',
+                    message: 'Ajout effectué avec succès.',
+                    type: 'success',
+                    duration: 3000
+                });
+
+                this.closeModal();
+                this.onSearch();
+            } catch (error) {
+                console.error('Erreur lors de l\'ajout du client:', error);
+                ElNotification({
+                    title: 'Erreur',
+                    message: 'Une erreur est survenue lors de l\'ajout.',
+                    type: 'error',
+                    duration: 3000
+                });
+            } 
+        },
+
+        async deleteMoto(roleId) {
+            const result = await Swal.fire({
+                title: 'Êtes-vous sûr ?',
+                text: "Cette action est irréversible !",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Oui, supprimer',
+                cancelButtonText: 'Annuler'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    await this.$store.dispatch('motos/del', roleId);
+                    ElNotification({
+                        title: 'Succès',
+                        message: 'Suppression effectuée avec succès.',
+                        type: 'success',
+                        duration: 3000
+                    });
+                    this.onSearch(); // recharge la liste
+                } catch (error) {
+                    console.error('Erreur lors de la suppression :', error);
+                    ElNotification({
+                        title: 'Erreur',
+                        message: 'Impossible de supprimer.',
+                        type: 'error'
+                    });
+                }
+            }
+        },
+        editMoto(role) {
+            this.form = { ...role };
+            this.openModal();
         }
 
-        // Function to handle adding a new post
-        const addPost = () => {
-            // Logic to add a new post goes here
-            console.log("New post added");
-        };
+    },
+    created() {
+        this.onSearch();
+    },
 
-        return {
-            addPost
-        };
-    }
 }
 </script>
-
-<style lang="scss" scoped></style>

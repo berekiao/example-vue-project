@@ -22,17 +22,17 @@ const mutations = {
 const actions = {
 
     async getAll(cxt) {
-        let data = await client.get('clients');
+        let data = await client.get('motos');
         cxt.commit("SET_ALL", data);
         return data;
     },
     async getOne(cxt, id) {
-        let data = await client.get('clients/' + id);
+        let data = await client.get('motos/' + id);
         cxt.commit("SET_ONE", data.data);
         return data;
     },
     async create(cxt, payload) {
-        let { data } = payload.id ? await client.put('clients/' + payload.id, payload) : await client.post('clients', payload);
+        let { data } = payload.id ? await client.put('motos/' + payload.id, payload) : await client.post('motos', payload);
         cxt.commit("SET_ONE", data);
         if (payload.id) {
             payload.id = null;
@@ -40,8 +40,13 @@ const actions = {
         return data;
     },
     async del(cxt, id) {
-        let { data } = await client.delete('clients/'+id);
+        let { data } = await client.delete('motos/'+id);
         cxt.commit("SET_ONE", data);
+        return data;
+    },
+    async getAllMotoDisponible(cxt) {
+        let data = await client.get('motos/disponibles');
+        cxt.commit("SET_ALL", data);
         return data;
     },
 

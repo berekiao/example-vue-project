@@ -1,0 +1,16 @@
+{
+    "nom": "DADJO",
+    "prenom": "Tony",
+    "telephone": "0198226622",
+    "adresse": "Cotonou BENIN",
+    "email": "tonydadjo@.gmail.com",
+    "dateNaissance": "2022-01-01",
+    "situationMatrimoniale": "CELIBATAIRE",
+    "typeLivreur": "YTS",
+    "dateFinContrat": "2026-01-01",
+    "statut": "ACTIF",
+    "numeroPieceIdentite": "292873836738373"
+   
+}
+
+/* Donne 6 exemples de livreurs */
