@@ -18,7 +18,7 @@
                                     <div class="mb-3">
                                         <label for="nom" class="form-label">Nom</label>
                                         <input type="text" class="form-control" v-model="form.nom" id="nom"
-                                            placeholder="Nom & Prénom">
+                                            placeholder="Nom">
                                     </div>
                                     <div class="mb-3">
                                         <label for="contact" class="form-label">Prénoms</label>
@@ -29,6 +29,16 @@
                                         <label for="structure" class="form-label">Contact</label>
                                         <input type="text" class="form-control" id="structure" placeholder="Téléphone"
                                             v-model="form.telephone">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="structure" class="form-label">Email</label>
+                                        <input type="text" class="form-control" id="structure" placeholder="Email"
+                                            v-model="form.email">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="structure" class="form-label">Société</label>
+                                        <input type="text" class="form-control" id="structure" placeholder="Société"
+                                            v-model="form.societe">
                                     </div>
                                     <div class="mb-3">
                                         <label for="statut" class="form-label">Statut</label>
@@ -67,27 +77,34 @@
             <div class="card-body">
                 <form class="row g-3 align-items-end">
                     <div class="col-md-3">
-                        <label for="filterNom" class="form-label">Nom & Prénom</label>
-                        <input type="text" class="form-control" id="filterNom" placeholder="Rechercher un nom">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="filterContact" class="form-label">Contact</label>
-                        <input type="text" class="form-control" id="filterContact" placeholder="Contact">
+                        <label for="filterNom" class="form-label">Nom</label>
+                        <input type="text" v-model="filterNom" class="form-control" id="filterNom" placeholder="Rechercher un nom">
                     </div>
                     <div class="col-md-3">
-                        <label for="filterStructure" class="form-label">Structure</label>
-                        <input type="text" class="form-control" id="filterStructure" placeholder="Structure">
+                        <label for="filterNom" class="form-label">Prénom</label>
+                        <input type="text" v-model="filterPrenom" class="form-control" id="filterNom" placeholder="Rechercher un nom">
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
+                        <label for="filterNom" class="form-label">Email</label>
+                        <input type="text" v-model="filterEmail" class="form-control" id="filterNom" placeholder="Rechercher un nom">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterContact" class="form-label">Contact</label>
+                        <input type="text" v-model="filterContact" class="form-control" id="filterContact" placeholder="Contact">
+                    </div>
+                    <div class="col-md-3 mt-2">
+                        <label for="filterStructure" class="form-label">Structure</label>
+                        <input type="text" v-model="filterStructure" class="form-control" id="filterStructure" placeholder="Structure">
+                    </div>
+                    <div class="col-md-3 mt-2">
                         <label for="filterStatut" class="form-label">Statut</label>
-                        <select class="form-control" id="filterStatut">
-                            <option value="">Tous</option>
-                            <option value="actif">Actif</option>
-                            <option value="inactif">Inactif</option>
+                        <select class="form-control" id="filterStatut" v-model="filterStatut">
+                            <option value="ACTIF">Actif</option>
+                            <option value="INACTIF">Inactif</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button type="button" class="btn btn-primary w-100">Filtrer</button>
+                        <button type="button" @click="onSearch" class="btn btn-primary w-100">Filtrer</button>
                     </div>
                 </form>
             </div>
@@ -106,16 +123,20 @@
                                 <th>Nº</th>
                                 <th>Nom & Prénom</th>
                                 <th>Contact </th>
+                                <th>Email </th>
+                                <th>Societe </th>
                                 <th>Statut</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            <tr v-for="(item, index) in items" :key="index">
+                            <tr v-for="(item, index) in filterItems" :key="index">
                                 <td> {{ index + 1 }}</td>
                                 <td>{{ item?.nom }} {{ item?.prenom }}</td>
                                 <td>{{ item?.telephone }}</td>
+                                <td>{{ item?.email }}</td>
+                                <td>{{ item?.societe }}</td>
                                 <td>
                                     <span class="badge badge-success" v-if="item?.statut">{{ item?.statut }}</span>
                                     <span class="badge badge-danger" v-else>{{ item?.statut }}</span>
@@ -135,6 +156,8 @@
 
                         </tbody>
                     </table>
+                    <PaginationNew :currentPage="items.number + 1" :totalPages="items.totalPages"
+                            :totalItems="items.totalElements || 0" :onPageChange="onSearch" />
                 </div>
             </div>
         </div>
@@ -147,11 +170,12 @@
 import { mapActions, mapGetters } from "vuex";
 import { ElMessage, ElNotification } from "element-plus";
 import Swal from 'sweetalert2'
+import PaginationNew from "../../components/PaginationNew.vue";
 
 
 export default {
     components: {
-
+        PaginationNew
     },
     name: 'clients',
     props: {
@@ -165,12 +189,14 @@ export default {
             statut: "ACTIF"
         },
         loading: false,
-        modalInstance: null
+        modalInstance: null, filterNom: "", filterPrenom: "", filterEmail: "", filterTelephone: "", filterSociete: "", filterStatut: "", filterAfter: "", filterBefore: ""
 
     }),
     computed: {
         ...mapGetters({ items: 'clients/all' }),
-
+        filterItems() {
+            return this.items.content;
+        }
     },
     methods: {
         resetForm() {
@@ -206,16 +232,34 @@ export default {
             modal.hide();
 
         },
-        onSearch(offset) {
+        /* onSearch(offset) {
             if (offset > 0) this.page = offset;
             this.$router.push({ query: this.page }).catch(() => { });
-            this.$store.dispatch('clients/getAll', this.page)
+            this.$store.dispatch('clients/getAllP', this.page)
                 .then((response) => {
 
                 })
 
+        }, */
+        onSearch(offset, size = 10) {
+            const params = {
+                page: offset - 1,
+                size: size || 10,
+                sort: "id,desc",
+                nom: this.filterNom,
+                prenom: this.filterPrenom,
+                email: this.filterEmail,
+                telephone: this.filterTelephone,
+                societe: this.filterSociete,
+                statut: this.filterStatut,
+                createdAfter: this.filterAfter,
+                createdBefore: this.filterBefore
+            };
+            this.$store.dispatch('clients/getAllP', params)
+                .then((response) => {
+                })
+                
         },
-
         async addClient() {
             this.loading = true;
             try {

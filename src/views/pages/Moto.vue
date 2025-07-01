@@ -82,27 +82,36 @@
                 <form class="row g-3 align-items-end">
                     <div class="col-md-2">
                         <label for="filterImmatriculation" class="form-label">Immatriculation</label>
-                        <input type="text" class="form-control" id="filterImmatriculation" placeholder="Ex : BJ1234AB">
+                        <input type="text" class="form-control" id="filterImmatriculation" placeholder="Ex : BJ1234AB" v-model="filterImmatriculation">
                     </div>
                     <div class="col-md-2">
                         <label for="filterMarque" class="form-label">Marque</label>
-                        <input type="text" class="form-control" id="filterMarque" placeholder="Yamaha, Honda...">
+                        <input type="text" class="form-control" id="filterMarque" placeholder="Yamaha, Honda..." v-model="filterMarque">
                     </div>
                     <div class="col-md-2">
                         <label for="filterModele" class="form-label">Modèle</label>
-                        <input type="text" class="form-control" id="filterModele" placeholder="CBR500R...">
+                        <input type="text" class="form-control" id="filterModele" placeholder="CBR500R..." v-model="filterModele">
                     </div>
                     <div class="col-md-2">
                         <label for="filterStatut" class="form-label">Statut</label>
-                        <select class="form-control" id="filterStatut">
+                        <select class="form-control" id="filterStatut" v-model="filterStatut">
                             <option value="">Tous</option>
-                            <option value="disponible">Disponible</option>
-                            <option value="en_utilisation">En cours d’utilisation</option>
-                            <option value="en_panne">En panne</option>
+                            <option value="DISPONIBLE">Disponible</option>
+                            <option value="EN_COURSE">En cours d’utilisation</option>
+                            <option value="EN_MAINTENANCE">En maintenance</option>
+                            <option value="HORS_SERVICE">Hors service</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button type="button" class="btn btn-primary w-100">Filtrer</button>
+                        <label for="filterDateMaintenanceAfter" class="form-label">Maintenance après</label>
+                        <input type="date" class="form-control" id="filterDateMaintenanceAfter" v-model="filterDateMaintenanceAfter">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="filterDateMaintenanceBefore" class="form-label">Maintenance avant</label>
+                        <input type="date" class="form-control" id="filterDateMaintenanceBefore" v-model="filterDateMaintenanceBefore">
+                    </div>
+                    <div class="col-md-2 mt-2">
+                        <button type="button" class="btn btn-primary w-100" @click="onSearch(1)">Filtrer</button>
                     </div>
                 </form>
             </div>
@@ -127,7 +136,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in items" :key="index">
+                            <tr v-for="(item, index) in filteredItems" :key="index">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ item.immatriculation }}</td>
                                 <td>{{ item.marque }}</td>
@@ -147,6 +156,8 @@
 
                         </tbody>
                     </table>
+                    <PaginationNew :currentPage="items.number + 1" :totalPages="items.totalPages"
+                            :totalItems="items.totalElements || 0" :onPageChange="onSearch" />
                 </div>
             </div>
         </div>
@@ -158,11 +169,13 @@
 import { mapActions, mapGetters } from "vuex";
 import { ElMessage, ElNotification } from "element-plus";
 import Swal from 'sweetalert2'
+import PaginationNew from "../../components/PaginationNew.vue";
+
 
 
 export default {
     components: {
-
+        PaginationNew
     },
     name: 'clients',
     props: {
@@ -178,12 +191,14 @@ export default {
             statut: "ACTIF"
         },
         loading: false,
-        modalInstance: null
+        modalInstance: null, filterMarque: "", filterModele: "", filterImmatriculation: "", filterStatut: "", filterDateMaintenanceAfter: "", filterDateMaintenanceBefore: ""
 
     }),
     computed: {
         ...mapGetters({ items: 'motos/all' }),
-
+        filteredItems() {
+            return this.items.content;
+        }
     },
     methods: {
         resetForm() {
@@ -219,14 +234,22 @@ export default {
             modal.hide();
 
         },
-        onSearch(offset) {
-            if (offset > 0) this.page = offset;
-            this.$router.push({ query: this.page }).catch(() => { });
-            this.$store.dispatch('motos/getAll', this.page)
+        onSearch(offset, size = 10) {
+            const params = {
+                page: offset - 1,
+                size: size || 10,
+                sort: "id,desc",
+                marque: this.filterMarque,
+                modele: this.filterModele,
+                immatriculation: this.filterImmatriculation,
+                statut: this.filterStatut,
+                dateMaintenanceAfter: this.filterDateMaintenanceAfter,
+                dateMaintenanceBefore: this.filterDateMaintenanceBefore, 
+            };
+            this.$store.dispatch('motos/getAllP', params)
                 .then((response) => {
-
                 })
-
+                
         },
         async addMoto() {
             this.loading = true;

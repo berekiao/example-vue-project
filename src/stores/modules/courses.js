@@ -67,7 +67,29 @@ const actions = {
         cxt.commit("SET_ALL", data);
         return data;
     },
-
+    async getAllP({ commit }, params = {}) {
+        const { page = 0, size = 10, sort = '', livreurId, clientId, numeroCommande, statutCourse, statutPaiement, typeCourse, dateCommandeAfter, dateCommandeBefore, montantMin, montantMax,  } = params;
+        const queryParams = new URLSearchParams({
+            page,
+            size,
+            sort,
+            ...(livreurId && { livreurId }),
+            ...(clientId && { clientId }),
+            ...(numeroCommande && { numeroCommande }),
+            ...(statutCourse && { statutCourse }),
+            ...(statutPaiement && { statutPaiement }),
+            ...(typeCourse && { typeCourse }),
+            ...(dateCommandeAfter && { dateCommandeAfter }),
+            ...(dateCommandeBefore && { dateCommandeBefore }),
+            ...(montantMin && { montantMin }),
+            ...(montantMax && { montantMax }),
+            
+        }).toString();
+        let data  = await client.get(`courses/search?${queryParams}`);
+        commit("SET_ALL", data)
+        //cxt.commit("SET_ALL", data);
+        return data;
+    },
 };
 
 export default {

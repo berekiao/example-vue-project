@@ -104,6 +104,21 @@
                                 </div>
 
                                 <div class="col-6 mb-3">
+                                    <label>Frais de Livraison</label>
+                                    <input type="text" class="form-control" v-model="form.fraisLivraison">
+                                </div>
+
+                                <div class="col-6 mb-3">
+                                    <label>Règlement</label>
+                                    <input type="text" class="form-control" v-model="form.reglement">
+                                </div>
+
+                                <div class="col-6 mb-3">
+                                    <label>Frais à Restituer</label>
+                                    <input type="text" class="form-control" v-model="form.fraisRestituer">
+                                </div>
+
+                                <div class="col-6 mb-3">
                                     <label>Téléphone Destinataire</label>
                                     <input type="text" class="form-control" v-model="form.telephoneDestinataire"
                                         placeholder="01XXXXXXXX">
@@ -138,38 +153,71 @@
             <div class="card-body">
                 <form class="row g-3 align-items-end">
                     <div class="col-md-3">
+                        <label for="filterDateCommandeAfter" class="form-label">Numéro Commande</label>
+                        <input type="text" class="form-control" id="filterDateCommandeAfter" v-model="filterNumeroCommande">
+                    </div>
+                    <div class="col-md-3">
                         <label for="filterLivreur" class="form-label">Livreur</label>
-                        <select class="form-control" id="filterLivreur">
+                        <select class="form-control" id="filterLivreur" v-model="filterLivreur">
                             <option value="">Tous</option>
-                            <option value="1">Thoñas Doe</option>
-                            <option value="2">Gui Frehu</option>
-                            <option value="3">Beno Doe</option>
+                            <option v-for="livreur in livreurs" :key="livreur.id" :value="livreur.id">
+                                {{ livreur.nom }} {{ livreur.prenom }}
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label for="filterClient" class="form-label">Client</label>
-                        <select class="form-control" id="filterClient">
+                        <select class="form-control" id="filterClient" v-model="filterClient">
                             <option value="">Tous</option>
-                            <option value="1">Amos Ploi</option>
-                            <option value="2">Frued Djadi</option>
-                            <option value="3">Loic Dossier</option>
+                            <option v-for="client in clients" :key="client.id" :value="client.id">
+                                {{ client.nom }} {{ client.prenom }}
+                            </option>
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <label for="filterStatut" class="form-label">Statut</label>
-                        <select class="form-control" id="filterStatut">
+                    <div class="col-md-3">
+                        <label for="filterStatutCourse" class="form-label">Statut Course</label>
+                        <select class="form-control" id="filterStatutCourse" v-model="filterStatutCourse">
                             <option value="">Tous</option>
-                            <option value="en_cours">En Cours</option>
-                            <option value="termine">Terminé</option>
-                            <option value="annule">Annulé</option>
+                            <option value="EN_COURS">En Cours</option>
+                            <option value="LIVREE">Livrée</option>
+                            <option value="ANNULEE">Annulée</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <label for="filterDate" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="filterDate">
+                    <div class="col-md-3">
+                        <label for="filterStatutPaiement" class="form-label">Statut Paiement</label>
+                        <select class="form-control" id="filterStatutPaiement" v-model="filterStatutPaiement">
+                            <option value="">Tous</option>
+                            <option value="EN_ATTENTE">En Attente</option>
+                            <option value="EFFECTUE">Effectué</option>
+                            <option value="ANNULE">Annulé</option>
+                        </select>
                     </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-primary w-100">Filtrer</button>
+                    <div class="col-md-3 mt-2">
+                        <label for="filterTypeCourse" class="form-label">Type Course</label>
+                        <select class="form-control" id="filterTypeCourse" v-model="filterTypeCourse">
+                            <option value="">Tous</option>
+                            <option value="TRANSMISSION_PRODUITS">Transmission de produits</option>
+                            <option value="FOURNITURE_SERVICES">Fourniture de services</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mt-2">
+                        <label for="filterDateCommandeAfter" class="form-label">Commande après</label>
+                        <input type="date" class="form-control" id="filterDateCommandeAfter" v-model="filterDateCommandeAfter">
+                    </div>
+                    <div class="col-md-3 mt-2">
+                        <label for="filterDateCommandeBefore" class="form-label">Commande avant</label>
+                        <input type="date" class="form-control" id="filterDateCommandeBefore" v-model="filterDateCommandeBefore">
+                    </div>
+                    <div class="col-md-3 mt-2">
+                        <label for="filterMontantMin" class="form-label">Montant min</label>
+                        <input type="number" class="form-control" id="filterMontantMin" v-model="filterMontantMin">
+                    </div>
+                    <div class="col-md-3 mt-2">
+                        <label for="filterMontantMax" class="form-label">Montant max</label>
+                        <input type="number" class="form-control" id="filterMontantMax" v-model="filterMontantMax">
+                    </div>
+                    <div class="col-md-3 mt-2">
+                        <button type="button" class="btn btn-primary w-100" @click="onSearch(1)">Filtrer</button>
                     </div>
                 </form>
             </div>
@@ -185,6 +233,7 @@
                         <thead>
                             <tr>
                                 <th>Nº</th>
+                                <th>Numero Commande</th>
                                 <th>Livreur</th>
                                 <th>Client </th>
                                 <th>Adresse départ </th>
@@ -196,8 +245,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in items" :key="index">
+                            <tr v-for="(item, index) in filterItems" :key="index">
                                 <td>{{ index + 1 }}</td>
+                                <td>{{ item?.numeroCommande }}</td>
                                 <td>{{ item.livreur.nom }} {{ item.livreur.prenom }}</td>
                                 <td>{{ item.client.nom }} {{ item.client.prenom }}</td>
                                 <td>{{ item.adresseDepart }}</td>
@@ -223,6 +273,8 @@
 
                         </tbody>
                     </table>
+                    <PaginationNew :currentPage="items.number + 1" :totalPages="items.totalPages"
+                            :totalItems="items.totalElements || 0" :onPageChange="onSearch" />
                 </div>
             </div>
         </div>
@@ -234,11 +286,13 @@
 import { mapActions, mapGetters } from "vuex";
 import { ElMessage, ElNotification } from "element-plus";
 import Swal from 'sweetalert2'
+import PaginationNew from "../../components/PaginationNew.vue";
+
 
 
 export default {
     components: {
-
+        PaginationNew
     },
     name: 'clients',
     props: {
@@ -259,7 +313,7 @@ export default {
             livraisonEffectueeAt: '',
             commentaire: '',
             nomDestinataire: '',
-            telephoneDestinataire: ''
+            telephoneDestinataire: '', filterLivreur: '', filterClient: '', filterDateHeureCommandeAfter: '', filterDateHeureCommandeBefore: '', filterStatutCourse: '', filterStatutPaiement: '', filterTypeCourse: '', filterDateCommandeAfter: '', filterDateCommandeBefore: '', filterMontantMin: '', filterMontantMax: '', filterNumeroCommande: ''
         },
         clients: [],
         livreurs: [],
@@ -269,7 +323,9 @@ export default {
     }),
     computed: {
         ...mapGetters({ items: 'courses/all' }),
-
+        filterItems() {
+            return this.items.content;
+        }
     },
     methods: {
         resetForm() {
@@ -305,14 +361,26 @@ export default {
             modal.hide();
 
         },
-        onSearch(offset) {
-            if (offset > 0) this.page = offset;
-            this.$router.push({ query: this.page }).catch(() => { });
-            this.$store.dispatch('courses/getAll', this.page)
+        onSearch(offset, size = 10) {
+            const params = {
+                page: offset - 1,
+                size: size || 10,
+                sort: "id,desc",
+                livreurId: this.filterLivreur,
+                clientId: this.filterClient,
+                numeroCommande: this.filterNumeroCommande,
+                statutCourse: this.filterStatutCourse,
+                statutPaiement: this.filterStatutPaiement,
+                typeCourse: this.filterTypeCourse, 
+                dateCommandeAfter: this.filterDateCommandeAfter, 
+                dateCommandeBefore: this.filterDateCommandeBefore, 
+                montantMin: this.filterMontantMin, 
+                montantMax: this.filterMontantMax, 
+            };
+            this.$store.dispatch('courses/getAllP', params)
                 .then((response) => {
-
                 })
-
+                
         },
 
         async addCourse() {

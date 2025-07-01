@@ -50,6 +50,26 @@ const actions = {
         return data;
     },
 
+    async getAllP({ commit }, params = {}) {
+        const { page = 0, size = 10, sort = '', marque, modele, immatriculation, dateMaintenanceAfter, dateMaintenanceBefore } = params;
+        const queryParams = new URLSearchParams({
+            page,
+            size,
+            sort,
+            ...(marque && { marque }),
+            ...(modele && { modele }),
+            ...(immatriculation && { immatriculation }),
+            ...(dateMaintenanceAfter && { dateMaintenanceAfter }),
+            ...(dateMaintenanceBefore && { dateMaintenanceBefore }),
+            
+            
+        }).toString();
+        let data  = await client.get(`motos/search?${queryParams}`);
+        commit("SET_ALL", data)
+        //cxt.commit("SET_ALL", data);
+        return data;
+    },
+
 };
 
 export default {

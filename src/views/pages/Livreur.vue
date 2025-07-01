@@ -28,6 +28,24 @@
                                             v-model="form.prenom">
                                     </div>
                                     <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" placeholder="Adresse email"
+                                            v-model="form.email">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="contact" class="form-label">Contact</label>
+                                        <input type="text" class="form-control" id="contact"
+                                            placeholder="Numéro de téléphone" v-model="form.telephone">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="typeContrat" class="form-label">Type de pièce</label>
+                                        <select class="form-control" id="typeContrat" v-model="form.typePiece">
+                                            <option value="CIP">CIP</option>
+                                            <option value="PASSPORT">PASSPORT</option>
+                                            <option value="CIN">CIN</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="pieceIdentite" class="form-label">Pièce d'identité</label>
                                         <input type="text" class="form-control" id="pieceIdentite"
                                             placeholder="N° de pièce ou référence" v-model="form.numeroPieceIdentite">
@@ -54,22 +72,24 @@
                                         </select>
                                     </div>
                                     <div class="mb-3">
+                                        <label for="contact" class="form-label">Personne d'Urgence à Contacter</label>
+                                        <input type="text" class="form-control" id="contact"
+                                            placeholder="Personne d'Urgence à Contacter" v-model="form.personneUrgence">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="contact" class="form-label">Contact d'Urgence</label>
+                                        <input type="text" class="form-control" id="contact"
+                                            placeholder="Contact d'Urgence" v-model="form.contactUrgence">
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="statut" class="form-label">Statut</label>
                                         <select class="form-control" id="statut" v-model="form.statut">
                                             <option value="ACTIF">Actif</option>
                                             <option value="INACTIF">Inactif</option>
                                         </select>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" placeholder="Adresse email"
-                                            v-model="form.email">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="contact" class="form-label">Contact</label>
-                                        <input type="text" class="form-control" id="contact"
-                                            placeholder="Numéro de téléphone" v-model="form.telephone">
-                                    </div>
+                                    
+                                    
                                 </div>
                             </div>
                         </form>
@@ -80,7 +100,138 @@
                             <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
                                 <i class="bi-x"></i> Fermer
                             </button>
-                            <button type="button" class="btn btn-primary ms-2">
+                            <button type="button" @click="addLivreur" class="btn btn-primary ms-2">
+                                <i class="bi-check"></i> Ajouter
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="detailLivreur" data-bs-backdrop="static" tabindex="-1" aria-labelledby="livreurLabel"
+            aria-hidden="true" style="backdrop-filter: blur(10px);">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content border-0">
+
+                    <div class="modal-header border-0 pb-0 align-items-start">
+                        <h5 class="mb-0" id="livreurLabel">Détail livreur : {{ livreur.nom }} {{ livreur.prenom }}</h5>
+                        <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- Statistiques -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="card text-center shadow-sm">
+                                    <div class="card-body">
+                                        <h6>Total Courses</h6>
+                                        <h4>{{ livreursStat.totalCourses ?? 0 }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card text-center shadow-sm">
+                                    <div class="card-body">
+                                        <h6>Courses Livrées</h6>
+                                        <h4>{{ livreursStat.count_LIVREE ?? 0 }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card text-center shadow-sm">
+                                    <div class="card-body">
+                                        <h6>Courses En Cours</h6>
+                                        <h4>{{ livreursStat.count_EN_COURS ?? 0 }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card text-center shadow-sm">
+                                    <div class="card-body">
+                                        <h6>Montant Total</h6>
+                                        <h4>{{ livreursStat.montantTotal?.toLocaleString() ?? 0 }} F CFA</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4>Liste des Courses</h4>
+
+                        <!-- Tableau des courses -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Commande</th>
+                                        <th>Date</th>
+                                        <th>Départ</th>
+                                        <th>Destination</th>
+                                        <th>Montant</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(course, index) in livreurCourse" :key="course.id">
+                                        <td>{{ index + 1 }}</td>
+                                        <td>{{ course.numeroCommande }}</td>
+                                        <td>{{ formatDate(course.dateHeureCommande) }}</td>
+                                        <td>{{ course.adresseDepart }}</td>
+                                        <td>{{ course.adresseLivraison }}</td>
+                                        <td>{{ course.montantTotal?.toLocaleString() }} F CFA</td>
+                                        <td>
+                                            <span :class="badgeClass(course.statutCourse)">
+                                                {{ course.statutCourse }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="!livreurCourse || livreurCourse.length === 0">
+                                        <td colspan="7" class="text-center text-muted">Aucune course trouvée</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>Liste des Motos affecter au livreur</h4>
+
+                        <!-- Tableau des courses -->
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nº</th>
+                                        <th>Immatriculation</th>
+                                        <th>Marque</th>
+                                        <th>Modèle</th>
+                                        <th>Periode</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(course, index) in livreurAffectation" :key="course.id">
+                                        <td>{{ index + 1 }}</td>
+                                        <td>{{ course.immatriculation }}</td>
+                                        <td>{{ course.marque }}</td>
+                                        <td>{{ course.modele }}</td>
+                                    </tr>
+                                    <tr v-if="!livreurAffectation || livreurAffectation.length === 0">
+                                        <td colspan="7" class="text-center text-muted">Aucune affectation</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <div class="modal-footer border-0 pt-0">
+                        <div class="text-center mx-auto">
+                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                                <i class="bi-x"></i> Fermer
+                            </button>
+                            <button type="button" @click="addLivreur" class="btn btn-primary ms-2">
                                 <i class="bi-check"></i> Ajouter
                             </button>
                         </div>
@@ -102,38 +253,65 @@
         <div class="card mb-4">
             <div class="card-body">
                 <form class="row g-3 align-items-end">
-                    <div class="col-md-2">
-                        <label for="filterNom" class="form-label">Nom</label>
-                        <input type="text" class="form-control" id="filterNom" placeholder="Nom">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="filterPrenom" class="form-label">Prénom</label>
-                        <input type="text" class="form-control" id="filterPrenom" placeholder="Prénom">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="filterContact" class="form-label">Contact</label>
-                        <input type="text" class="form-control" id="filterContact" placeholder="Contact">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="filterTypeContrat" class="form-label">Type de contrat</label>
-                        <select class="form-control" id="filterTypeContrat">
-                            <option value="">Tous</option>
-                            <option value="independant">Indépendant</option>
-                            <option value="interne">Interne</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="filterStatut" class="form-label">Statut</label>
-                        <select class="form-control" id="filterStatut">
-                            <option value="">Tous</option>
-                            <option value="actif">Actif</option>
-                            <option value="inactif">Inactif</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-primary w-100">Filtrer</button>
-                    </div>
-                </form>
+                <div class="col-md-2">
+                    <label for="filterNom" class="form-label">Nom</label>
+                    <input type="text" class="form-control" id="filterNom" placeholder="Nom" v-model="filterNom">
+                </div>
+                <div class="col-md-2">
+                    <label for="filterPrenom" class="form-label">Prénom</label>
+                    <input type="text" class="form-control" id="filterPrenom" placeholder="Prénom" v-model="filterPrenom">
+                </div>
+                <div class="col-md-2">
+                    <label for="filterEmail" class="form-label">Email</label>
+                    <input type="text" class="form-control" id="filterEmail" placeholder="Email" v-model="filterEmail">
+                </div>
+                <div class="col-md-2">
+                    <label for="filterTelephone" class="form-label">Contact</label>
+                    <input type="text" class="form-control" id="filterTelephone" placeholder="Contact" v-model="filterTelephone">
+                </div>
+                <div class="col-md-2">
+                    <label for="filterSituationMatrimoniale" class="form-label">Situation Matrimoniale</label>
+                    <select class="form-control" id="filterSituationMatrimoniale" v-model="filterSituationMatrimoniale">
+                        <option value="">Toutes</option>
+                        <option value="CELIBATAIRE">Célibataire</option>
+                        <option value="MARIE">Marié</option>
+                        <option value="DIVORCE">Divorcé</option>
+                        <option value="VEUF">Veuf</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="filterTypeLivreur" class="form-label">Type de contrat</label>
+                    <select class="form-control" id="filterTypeLivreur" v-model="filterTypeLivreur">
+                        <option value="">Tous</option>
+                        <option value="INDEPENDANT">Indépendant</option>
+                        <option value="YTS">Yts</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="filterStatut" class="form-label">Statut</label>
+                    <select class="form-control" id="filterStatut" v-model="filterStatut">
+                        <option value="">Tous</option>
+                        <option value="ACTIF">Actif</option>
+                        <option value="INACTIF">Inactif</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="filterTypePiece" class="form-label">Type de pièce</label>
+                    <select class="form-control" id="filterTypePiece" v-model="filterTypePiece">
+                        <option value="">Toutes</option>
+                        <option value="CIP">CIP</option>
+                        <option value="PASSPORT">PASSPORT</option>
+                        <option value="CIN">CIN</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="filterNumeroPiece" class="form-label">N° de pièce</label>
+                    <input type="text" class="form-control" id="filterNumeroPiece" placeholder="N° de pièce" v-model="filterNumeroPiece">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary w-100" @click="onSearch(1)">Filtrer</button>
+                </div>
+            </form>
             </div>
         </div>
 
@@ -159,7 +337,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in items" :key="index">
+                            <tr v-for="(item, index) in filterItems" :key="index">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ item.nom }}</td>
                                 <td>{{ item.prenom }}</td>
@@ -177,6 +355,8 @@
                                                 class="fas fa-edit"></i></button>
                                         <button type="button" @click="deleteMoto(item.id)" class="btn btn-danger"><i
                                                 class="fas fa-trash"></i></button>
+                                        <button type="button" @click="detailLivreur(item)" class="btn btn-secondary"><i
+                                                class="fas fa-info"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -184,7 +364,10 @@
 
 
                         </tbody>
+                        
                     </table>
+                    <PaginationNew :currentPage="items.number + 1" :totalPages="items.totalPages"
+                            :totalItems="items.totalElements || 0" :onPageChange="onSearch" />
                 </div>
             </div>
         </div>
@@ -196,11 +379,12 @@
 import { mapActions, mapGetters } from "vuex";
 import { ElMessage, ElNotification } from "element-plus";
 import Swal from 'sweetalert2'
+import PaginationNew from "../../components/PaginationNew.vue";
 
 
 export default {
     components: {
-
+        PaginationNew
     },
     name: 'clients',
     props: {
@@ -218,15 +402,19 @@ export default {
             typeLivreur: "INDEPENDANT",
             dateFinContrat: "",
             statut: "ACTIF",
+            typePiece: "CIP",
             numeroPieceIdentite: ""
         },
         loading: false,
-        modalInstance: null
+        modalInstance: null, filterNom: "", filterPrenom: "", filterEmail: "", filterTelephone: "", filterSituationMatrimoniale: "", filterSituationMatrimoniale: "", filterTypeLivreur: "", filterStatut: "", filterTypePiece: "", filterNumeroPiece: "",
+        livreurCourse: [], livreursStat : [], livreur: {}, livreurAffectation: []
 
     }),
     computed: {
         ...mapGetters({ items: 'livreurs/all' }),
-
+        filterItems() {
+            return this.items.content;
+        }
     },
     methods: {
         resetForm() {
@@ -262,16 +450,27 @@ export default {
             modal.hide();
 
         },
-        onSearch(offset) {
-            if (offset > 0) this.page = offset;
-            this.$router.push({ query: this.page }).catch(() => { });
-            this.$store.dispatch('livreurs/getAll', this.page)
+        onSearch(offset, size = 10) {
+            const params = {
+                page: offset - 1,
+                size: size || 10,
+                sort: "id,asc",
+                nom: this.filterNom,
+                prenom: this.filterPrenom,
+                email: this.filterEmail,
+                telephone: this.filterTelephone,
+                situationMatrimoniale: this.filterSituationMatrimoniale,
+                typeLivreur: this.filterTypeLivreur,
+                statut: this.filterStatut,
+                typePiece: this.filterTypePiece, 
+                numeroPieceIdentite: this.filterNumeroPiece
+            };
+            this.$store.dispatch('livreurs/getAllP', params)
                 .then((response) => {
-
                 })
-
+                
         },
-        async addMoto() {
+        async addLivreur() {
             this.loading = true;
             try {
                 await this.$store.dispatch('livreurs/create', this.form);
@@ -331,6 +530,72 @@ export default {
         editMoto(role) {
             this.form = { ...role };
             this.openModal();
+        },
+        openDetail() {
+            // Déplacer le modal 
+            document.body.appendChild(document.getElementById('detailLivreur'));
+
+            // Ouvrir le modal
+            const modal = new bootstrap.Modal(document.getElementById('detailLivreur'));
+            modal.show();
+        },
+        closeDetail() {
+            // Récupérer le modal
+            const modalElement = document.getElementById('detailLivreur');
+
+            // Créer un gestionnaire d'événements pour l'événement "hidden.bs.modal"
+            const hiddenHandler = () => {
+                // Masquer manuellement le backdrop
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.style.display = 'none';
+                }
+            };
+
+            // Ajouter l'événement "hidden.bs.modal"
+            modalElement.addEventListener('hidden.bs.modal', hiddenHandler);
+
+            // Fermer le modal
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+
+        },
+        async statByLivreur(id) {
+            const response = await this.$store.dispatch('livreurs/statByLivreur', id);
+            if (response) {
+                this.livreursStat = response 
+            }
+        },
+        async getInfoById(id) {
+            const response = await this.$store.dispatch('livreurs/getInfoById', id);
+            if (response) {
+                this.livreurCourse = response.content
+            }
+        },
+        async getAffectationById(id) {
+            const response = await this.$store.dispatch('livreurs/getAffectationById', id);
+            if (response) {
+                this.livreurAffectation = response.content
+            }
+        },
+        detailLivreur(item) {
+            this.livreur = item
+            this.getInfoById(item.id);
+            this.statByLivreur(item.id);
+            this.getAffectationById(item.id);
+            this.openDetail();
+        },
+        formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        },
+        badgeClass(status) {
+            switch (status) {
+                case 'LIVREE': return 'badge bg-success text-light';
+                case 'EN_COURS': return 'badge bg-warning text-light';
+                default: return 'badge bg-secondary text-light';
+            }
         }
 
     },

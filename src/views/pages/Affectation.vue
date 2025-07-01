@@ -173,11 +173,13 @@
 import { mapActions, mapGetters } from "vuex";
 import { ElMessage, ElNotification } from "element-plus";
 import Swal from 'sweetalert2'
+import PaginationNew from "../../components/PaginationNew.vue";
+
 
 
 export default {
     components: {
-
+        PaginationNew
     },
     name: 'clients',
     props: {

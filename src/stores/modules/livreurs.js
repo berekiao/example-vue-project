@@ -49,8 +49,41 @@ const actions = {
         cxt.commit("SET_ALL", data);
         return data;
     },
-
-
+    async getAllP({ commit }, params = {}) {
+        const { page = 0, size = 10, sort = '', nom, prenom, email, telephone, adresse, situationMatrimoniale, typeLivreur, statut, typePiece, numeroPieceIdentite,  } = params;
+        const queryParams = new URLSearchParams({
+            page,
+            size,
+            sort,
+            ...(nom && { nom }),
+            ...(prenom && { prenom }),
+            ...(email && { email }),
+            ...(telephone && { telephone }),
+            ...(adresse && { adresse }),
+            ...(situationMatrimoniale && { situationMatrimoniale }),
+            ...(typeLivreur && { typeLivreur }),
+            ...(statut && { statut }),
+            ...(typePiece && { typePiece }),
+            ...(numeroPieceIdentite && { numeroPieceIdentite }),
+            
+        }).toString();
+        let data  = await client.get(`livreurs/search?${queryParams}`);
+        commit("SET_ALL", data)
+        //cxt.commit("SET_ALL", data);
+        return data;
+    },
+    getInfoById(cxt, livreurId) {
+        let data = client.get('courses/livreur/' + livreurId);
+        return data;
+    },
+    statByLivreur(cxt, livreurId) {
+        let data = client.get(`courses/livreur/${livreurId}/stats` );
+        return data;
+    },
+    getAffectationById(cxt, livreurId) {
+        let data = client.get(`affectations-moto/livreurs/${livreurId}/motos/historique`);
+        return data;
+    },
 };
 
 export default {

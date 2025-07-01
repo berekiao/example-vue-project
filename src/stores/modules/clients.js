@@ -44,7 +44,27 @@ const actions = {
         cxt.commit("SET_ONE", data);
         return data;
     },
-
+    async getAllP({ commit }, params = {}) {
+        const { page = 0, size = 10, sort = '', nom, prenom, email, telephone, societe, statut, createdAfter, createdBefore } = params;
+        const queryParams = new URLSearchParams({
+            page,
+            size,
+            sort,
+            ...(nom && { nom }),
+            ...(prenom && { prenom }),
+            ...(email && { email }),
+            ...(telephone && { telephone }),
+            ...(societe && { societe }),
+            ...(statut && { statut }),
+            ...(createdAfter && { createdAfter }),
+            ...(createdBefore && { createdBefore }),
+            
+        }).toString();
+        let data  = await client.get(`clients/search?${queryParams}`);
+        commit("SET_ALL", data)
+        //cxt.commit("SET_ALL", data);
+        return data;
+    },
 };
 
 export default {
