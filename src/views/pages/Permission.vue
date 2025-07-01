@@ -1,6 +1,7 @@
 <template>
     <div class="container-fluid">
 
+        <!-- Modale existante pour ajout/modification -->
         <div class="modal fade" id="permissionModal" data-bs-backdrop="static" tabindex="-1"
             aria-labelledby="permissionLabel" aria-hidden="true" style="backdrop-filter: blur(10px);">
             <div class="modal-dialog modal-dialog-centered">
@@ -8,22 +9,28 @@
 
                     <div class="modal-header border-0 pb-0 align-items-start">
                         <h5 class="mb-0" id="permissionLabel">Créer une Permission</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Fermer">
+                        <!-- AJOUT : Correction de la croix pour fermer la modale -->
+                        <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
+                        <!-- FIN AJOUT -->
                     </div>
 
                     <div class="modal-body">
                         <form>
                             <div class="mb-3">
+                                <!-- AJOUT : Ajout de v-model pour lier l’input au form -->
                                 <label for="libellePermission" class="form-label">Libellé</label>
                                 <input type="text" class="form-control" id="libellePermission"
-                                    placeholder="Ex : Gérer les utilisateurs">
+                                    placeholder="Ex : Gérer les utilisateurs" v-model="form.libelle">
+                                <!-- FIN AJOUT -->
                             </div>
                             <div class="mb-3">
+                                <!-- AJOUT : Ajout de v-model pour lier le textarea au form -->
                                 <label for="descriptionPermission" class="form-label">Description</label>
                                 <textarea class="form-control" id="descriptionPermission" rows="3"
-                                    placeholder="Description de la permission"></textarea>
+                                    placeholder="Description de la permission" v-model="form.description"></textarea>
+                                <!-- FIN AJOUT -->
                             </div>
                         </form>
                     </div>
@@ -43,11 +50,45 @@
             </div>
         </div>
 
+        <!-- AJOUT : Nouvelle modale pour afficher les détails de la permission -->
+        <div class="modal fade" id="permissionDetailsModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="permissionDetailsLabel"
+            aria-hidden="true" style="backdrop-filter: blur(10px);">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0">
+                    <div class="modal-header border-0 pb-0 align-items-start">
+                        <h5 class="mb-0" id="permissionDetailsLabel">Détails de la Permission</h5>
+                        <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Libellé</label>
+                                <p>{{ selectedPermission?.libelle || 'Non renseigné' }}</p>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Description</label>
+                                <p>{{ selectedPermission?.description || 'Non renseigné' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <div class="text-center mx-auto">
+                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i class="bi-x"></i> Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- FIN AJOUT -->
+
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Permission</h1>
-            <a href="#" data-toggle="modal" data-target="#permissionModal"
-                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"> Nouveau Permission</a>
+            <!-- AJOUT : Remplacement de data-toggle par @click pour ouvrir la modale -->
+            <a href="#" @click="openModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"> Nouvelle Permission</a>
+            <!-- FIN AJOUT -->
         </div>
 
         <div class="card mb-4">
@@ -102,8 +143,11 @@
                                 <td>Permet de créer un nouvel utilisateur dans le système</td>
                                 <td>
                                     <div class="btn-group">
-                                        <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                                        <!-- AJOUT : Ajout de @click pour Modifier, Supprimer et Détails -->
+                                        <button class="btn btn-primary" @click="updatePermission({ id: 1, libelle: 'Créer un utilisateur', description: 'Permet de créer un nouvel utilisateur dans le système' })"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-danger" @click="deletePermission({ id: 1, libelle: 'Créer un utilisateur' })"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-info" @click="showDetails({ id: 1, libelle: 'Créer un utilisateur', description: 'Permet de créer un nouvel utilisateur dans le système' })"><i class="fas fa-eye"></i></button>
+                                        <!-- FIN AJOUT -->
                                     </div>
                                 </td>
                             </tr>
@@ -113,8 +157,11 @@
                                 <td>Autorise la modification des informations d'un utilisateur</td>
                                 <td>
                                     <div class="btn-group">
-                                        <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                                        <!-- AJOUT : Ajout de @click pour Modifier, Supprimer et Détails -->
+                                        <button class="btn btn-primary" @click="updatePermission({ id: 2, libelle: 'Modifier un utilisateur', description: 'Autorise la modification des informations d\'un utilisateur' })"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-danger" @click="deletePermission({ id: 2, libelle: 'Modifier un utilisateur' })"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-info" @click="showDetails({ id: 2, libelle: 'Modifier un utilisateur', description: 'Autorise la modification des informations d\'un utilisateur' })"><i class="fas fa-eye"></i></button>
+                                        <!-- FIN AJOUT -->
                                     </div>
                                 </td>
                             </tr>
@@ -124,8 +171,11 @@
                                 <td>Permet de supprimer un utilisateur de la plateforme</td>
                                 <td>
                                     <div class="btn-group">
-                                        <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                                        <!-- AJOUT : Ajout de @click pour Modifier, Supprimer et Détails -->
+                                        <button class="btn btn-primary" @click="updatePermission({ id: 3, libelle: 'Supprimer un utilisateur', description: 'Permet de supprimer un utilisateur de la plateforme' })"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-danger" @click="deletePermission({ id: 3, libelle: 'Supprimer un utilisateur' })"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-info" @click="showDetails({ id: 3, libelle: 'Supprimer un utilisateur', description: 'Permet de supprimer un utilisateur de la plateforme' })"><i class="fas fa-eye"></i></button>
+                                        <!-- FIN AJOUT -->
                                     </div>
                                 </td>
                             </tr>
@@ -135,8 +185,11 @@
                                 <td>Accès à la gestion des paiements et règlements</td>
                                 <td>
                                     <div class="btn-group">
-                                        <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                                        <!-- AJOUT : Ajout de @click pour Modifier, Supprimer et Détails -->
+                                        <button class="btn btn-primary" @click="updatePermission({ id: 4, libelle: 'Gérer les paiements', description: 'Accès à la gestion des paiements et règlements' })"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-danger" @click="deletePermission({ id: 4, libelle: 'Gérer les paiements' })"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-info" @click="showDetails({ id: 4, libelle: 'Gérer les paiements', description: 'Accès à la gestion des paiements et règlements' })"><i class="fas fa-eye"></i></button>
+                                        <!-- FIN AJOUT -->
                                     </div>
                                 </td>
                             </tr>
@@ -146,37 +199,99 @@
                                 <td>Peut affecter une moto à un livreur</td>
                                 <td>
                                     <div class="btn-group">
-                                        <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                                        <!-- AJOUT : Ajout de @click pour Modifier, Supprimer et Détails -->
+                                        <button class="btn btn-primary" @click="updatePermission({ id: 5, libelle: 'Attribuer une moto', description: 'Peut affecter une moto à un livreur' })"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-danger" @click="deletePermission({ id: 5, libelle: 'Attribuer une moto' })"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-info" @click="showDetails({ id: 5, libelle: 'Attribuer une moto', description: 'Peut affecter une moto à un livreur' })"><i class="fas fa-eye"></i></button>
+                                        <!-- FIN AJOUT -->
                                     </div>
                                 </td>
                             </tr>
-                            <!-- Ajoute d'autres permissions au besoin -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-
-
     </div>
 </template>
 
 <script>
+import { ElNotification } from "element-plus"; // AJOUT : Importation d’ElNotification
+import Swal from 'sweetalert2'; // AJOUT : Importation de SweetAlert2
+
 export default {
+    // AJOUT : Ajout de data et methods pour gérer Modifier, Supprimer et Détails
+    data() {
+        return {
+            selectedPermission: null,
+            form: {
+                libelle: "",
+                description: ""
+            }
+        };
+    },
+    methods: {
+        // AJOUT : Méthodes pour ouvrir la modale, modifier, supprimer et afficher les détails
+        openModal() {
+            document.body.appendChild(document.getElementById('permissionModal'));
+            const modal = new bootstrap.Modal(document.getElementById('permissionModal'));
+            modal.show();
+        },
+        updatePermission(item) {
+            this.form = { ...item };
+            this.openModal();
+        },
+        deletePermission(item) {
+            Swal.fire({
+                title: 'Êtes-vous sûr ?',
+                text: `Voulez-vous vraiment supprimer la permission "${item.libelle}" ? Cette action est irréversible !`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Oui, supprimer',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    try {
+                        // Simulation de la suppression (pas de Vuex, données statiques)
+                        console.log(`Suppression de la permission avec ID: ${item.id}`);
+                        ElNotification({
+                            title: 'Succès',
+                            message: `La permission "${item.libelle}" a été supprimée avec succès.`,
+                            type: 'success',
+                            duration: 3000
+                        });
+                    } catch (error) {
+                        console.error('Erreur lors de la suppression :', error);
+                        ElNotification({
+                            title: 'Erreur',
+                            message: 'Impossible de supprimer la permission.',
+                            type: 'error',
+                            duration: 3000
+                        });
+                    }
+                }
+            });
+        },
+        showDetails(item) {
+            this.selectedPermission = item;
+            document.body.appendChild(document.getElementById('permissionDetailsModal'));
+            const modal = new bootstrap.Modal(document.getElementById('permissionDetailsModal'));
+            modal.show();
+        },
+        // FIN AJOUT
+    },
     setup() {
         const openModal = () => {
-            // Déplacer le modal 
-            document.body.appendChild(document.getElementById('postModal'));
-
-            // Ouvrir le modal
-            const modal = new bootstrap.Modal(document.getElementById('postModal'));
+            // AJOUT : Correction de l’ID du modal (postModal -> permissionModal)
+            document.body.appendChild(document.getElementById('permissionModal'));
+            // FIN AJOUT
+            const modal = new bootstrap.Modal(document.getElementById('permissionModal'));
             modal.show();
         }
 
-        // Function to handle adding a new post
         const addPost = () => {
-            // Logic to add a new post goes here
             console.log("New post added");
         };
 

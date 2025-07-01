@@ -1,6 +1,7 @@
 <template>
     <div class="container-fluid">
 
+        <!-- Modale existante pour ajout/modification (inchangée) -->
         <div class="modal fade" id="postModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="sousLabel"
             aria-hidden="true" style="backdrop-filter: blur(10px);">
             <div class="modal-dialog modal-dialog-centered">
@@ -65,6 +66,56 @@
             </div>
         </div>
 
+        <!-- AJOUT : Nouvelle modale pour afficher les détails du client -->
+        <div class="modal fade" id="clientDetailsModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="clientDetailsLabel"
+            aria-hidden="true" style="backdrop-filter: blur(10px);">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0">
+                    <div class="modal-header border-0 pb-0 align-items-start">
+                        <h5 class="mb-0" id="clientDetailsLabel">Détails du Client</h5>
+                        <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Nom</label>
+                                    <p>{{ selectedClient?.nom || 'Non renseigné' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Prénoms</label>
+                                    <p>{{ selectedClient?.prenom || 'Non renseigné' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Contact</label>
+                                    <p>{{ selectedClient?.telephone || 'Non renseigné' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <p>{{ selectedClient?.email || 'Non renseigné' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Société</label>
+                                    <p>{{ selectedClient?.societe || 'Non renseigné' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Statut</label>
+                                    <p>{{ selectedClient?.statut || 'Non renseigné' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <div class="text-center mx-auto">
+                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i class="bi-x"></i> Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- FIN AJOUT -->
 
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -129,7 +180,6 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             <tr v-for="(item, index) in filterItems" :key="index">
                                 <td> {{ index + 1 }}</td>
@@ -149,11 +199,14 @@
                                         <button type="button" class="btn btn-danger" @click="deleteRole(item.id)">
                                             <i class="fas fa-trash"></i>
                                         </button>
+                                        <!-- AJOUT : Bouton Détails -->
+                                        <button type="button" class="btn btn-info" @click="showDetails(item)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <!-- FIN AJOUT -->
                                     </div>
                                 </td>
                             </tr>
-
-
                         </tbody>
                     </table>
                     <PaginationNew :currentPage="items.number + 1" :totalPages="items.totalPages"
@@ -161,17 +214,14 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>
-
 
 <script>
 import { mapActions, mapGetters } from "vuex";
 import { ElMessage, ElNotification } from "element-plus";
 import Swal from 'sweetalert2'
 import PaginationNew from "../../components/PaginationNew.vue";
-
 
 export default {
     components: {
@@ -189,8 +239,18 @@ export default {
             statut: "ACTIF"
         },
         loading: false,
-        modalInstance: null, filterNom: "", filterPrenom: "", filterEmail: "", filterTelephone: "", filterSociete: "", filterStatut: "", filterAfter: "", filterBefore: ""
-
+        modalInstance: null,
+        filterNom: "",
+        filterPrenom: "",
+        filterEmail: "",
+        filterTelephone: "",
+        filterSociete: "",
+        filterStatut: "",
+        filterAfter: "",
+        filterBefore: "",
+        // AJOUT : Propriété pour stocker le client sélectionné pour les détails
+        selectedClient: null
+        // FIN AJOUT
     }),
     computed: {
         ...mapGetters({ items: 'clients/all' }),
@@ -199,48 +259,40 @@ export default {
         }
     },
     methods: {
+        // AJOUT : Méthode pour afficher les détails d’un client
+        showDetails(item) {
+            this.selectedClient = item;
+            document.body.appendChild(document.getElementById('clientDetailsModal'));
+            const modal = new bootstrap.Modal(document.getElementById('clientDetailsModal'));
+            modal.show();
+        },
+        // FIN AJOUT
         resetForm() {
-            this.role = {},
-                this.openModal();
+            this.form = {
+                nom: "",
+                prenom: "",
+                telephone: "",
+                statut: "ACTIF"
+            };
+            this.openModal();
         },
         openModal() {
-            // Déplacer le modal 
             document.body.appendChild(document.getElementById('postModal'));
-
-            // Ouvrir le modal
             const modal = new bootstrap.Modal(document.getElementById('postModal'));
             modal.show();
         },
         closeModal() {
-            // Récupérer le modal
             const modalElement = document.getElementById('postModal');
-
-            // Créer un gestionnaire d'événements pour l'événement "hidden.bs.modal"
             const hiddenHandler = () => {
-                // Masquer manuellement le backdrop
                 const backdrop = document.querySelector('.modal-backdrop');
                 if (backdrop) {
                     backdrop.style.display = 'none';
                 }
             };
-
-            // Ajouter l'événement "hidden.bs.modal"
             modalElement.addEventListener('hidden.bs.modal', hiddenHandler);
-
-            // Fermer le modal
             const modal = bootstrap.Modal.getInstance(modalElement);
             modal.hide();
-
         },
-        /* onSearch(offset) {
-            if (offset > 0) this.page = offset;
-            this.$router.push({ query: this.page }).catch(() => { });
-            this.$store.dispatch('clients/getAllP', this.page)
-                .then((response) => {
-
-                })
-
-        }, */
         onSearch(offset, size = 10) {
             const params = {
                 page: offset - 1,
@@ -257,21 +309,18 @@ export default {
             };
             this.$store.dispatch('clients/getAllP', params)
                 .then((response) => {
-                })
-                
+                });
         },
         async addClient() {
             this.loading = true;
             try {
                 await this.$store.dispatch('clients/create', this.form);
-
                 ElNotification({
                     title: 'Succès',
                     message: 'Ajout effectué avec succès.',
                     type: 'success',
                     duration: 3000
                 });
-
                 this.closeModal();
                 this.onSearch();
             } catch (error) {
@@ -286,7 +335,6 @@ export default {
                 this.loading = false;
             }
         },
-
         async deleteRole(roleId) {
             const result = await Swal.fire({
                 title: 'Êtes-vous sûr ?',
@@ -298,7 +346,6 @@ export default {
                 confirmButtonText: 'Oui, supprimer',
                 cancelButtonText: 'Annuler'
             });
-
             if (result.isConfirmed) {
                 try {
                     await this.$store.dispatch('clients/del', roleId);
@@ -308,7 +355,7 @@ export default {
                         type: 'success',
                         duration: 3000
                     });
-                    this.onSearch(); // recharge la liste
+                    this.onSearch();
                 } catch (error) {
                     console.error('Erreur lors de la suppression :', error);
                     ElNotification({
@@ -323,11 +370,9 @@ export default {
             this.form = { ...role };
             this.openModal();
         }
-
     },
     created() {
         this.onSearch();
-    },
-
+    }
 }
 </script>

@@ -1,23 +1,21 @@
 <template>
     <div class="container-fluid">
 
+        <!-- Modale existante pour ajout/modification (inchangée) -->
         <div class="modal fade" id="affectationModal" data-bs-backdrop="static" tabindex="-1"
             aria-labelledby="affectationLabel" aria-hidden="true" style="backdrop-filter: blur(10px);">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0">
-
                     <div class="modal-header border-0 pb-0 align-items-start">
                         <h5 class="mb-0" id="affectationLabel">Nouvelle Affectation</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
-
                     <div class="modal-body">
                         <form>
                             <div class="row">
                                 <div class="col-12">
-
                                     <div class="mb-3">
                                         <label for="moto" class="form-label">Moto</label>
                                         <select class="form-control" id="moto" v-model="form.moto">
@@ -25,7 +23,6 @@
                                             <option v-for="items in motos" :value="items" :key="items.id">{{items.marque}} {{items.modele}}</option>
                                         </select>
                                     </div>
-
                                     <div class="mb-3">
                                         <label for="livreur" class="form-label">Livreur</label>
                                         <select class="form-control" id="livreur" v-model="form.livreur">
@@ -33,17 +30,14 @@
                                             <option v-for="items in livreurs" :value="items" :key="items.id">{{items.nom}} {{items.prenom}}</option>
                                         </select>
                                     </div>
-
                                     <div class="mb-3">
                                         <label for="dateDebut" class="form-label">Date de début</label>
                                         <input type="date" class="form-control" v-model="form.dateDebut" id="dateDebut">
                                     </div>
-
                                     <div class="mb-3">
                                         <label for="dateFin" class="form-label">Date de fin</label>
                                         <input type="date" class="form-control" v-model="form.dateFin" id="dateFin">
                                     </div>
-
                                     <div class="mb-3">
                                         <label for="statut" class="form-label">Statut</label>
                                         <select class="form-control" id="statut" v-model="form.statut">
@@ -51,18 +45,15 @@
                                             <option value="INACTIF">Terminé</option>
                                         </select>
                                     </div>
-
                                     <div class="mb-3">
                                         <label for="observation" class="form-label">Observation</label>
                                         <textarea class="form-control" id="observation" v-model="form.commentaire" rows="3"
                                             placeholder="Notes, remarques, etc."></textarea>
                                     </div>
-
                                 </div>
                             </div>
                         </form>
                     </div>
-
                     <div class="modal-footer border-0 pt-0">
                         <div class="text-center mx-auto">
                             <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
@@ -73,10 +64,60 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
+
+        <!-- AJOUT : Nouvelle modale pour afficher les détails de l’affectation -->
+        <div class="modal fade" id="affectationDetailsModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="affectationDetailsLabel"
+            aria-hidden="true" style="backdrop-filter: blur(10px);">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0">
+                    <div class="modal-header border-0 pb-0 align-items-start">
+                        <h5 class="mb-0" id="affectationDetailsLabel">Détails de l’Affectation</h5>
+                        <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Moto</label>
+                                    <p>{{ selectedAffectation?.moto?.marque }} {{ selectedAffectation?.moto?.modele || 'Non renseigné' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Livreur</label>
+                                    <p>{{ selectedAffectation?.livreur?.nom }} {{ selectedAffectation?.livreur?.prenom || 'Non renseigné' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Date de début</label>
+                                    <p>{{ selectedAffectation?.dateDebut || 'Non renseigné' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Date de fin</label>
+                                    <p>{{ selectedAffectation?.dateFin || 'Non renseigné' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Statut</label>
+                                    <p>{{ selectedAffectation?.statut || 'Non renseigné' }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Observation</label>
+                                    <p>{{ selectedAffectation?.commentaire || 'Non renseigné' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <div class="text-center mx-auto">
+                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i class="bi-x"></i> Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- FIN AJOUT -->
 
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -154,18 +195,19 @@
                                 <td>{{ item.commentaire }}</td>
                                 <td>
                                     <div class="btn-group">
-                                        <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-primary" @click="updateRole(item)"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-danger" @click="deleteRole(item.id)"><i class="fas fa-trash"></i></button>
+                                        <!-- AJOUT : Bouton Détails -->
+                                        <button class="btn btn-info" @click="showDetails(item)"><i class="fas fa-eye"></i></button>
+                                        <!-- FIN AJOUT -->
                                     </div>
                                 </td>
                             </tr>
-                            
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -175,13 +217,11 @@ import { ElMessage, ElNotification } from "element-plus";
 import Swal from 'sweetalert2'
 import PaginationNew from "../../components/PaginationNew.vue";
 
-
-
 export default {
     components: {
         PaginationNew
     },
-    name: 'clients',
+    name: 'affectations', // Corrigé de 'clients' à 'affectations' pour correspondre au composant
     props: {
         msg: String
     },
@@ -195,69 +235,70 @@ export default {
             statut: "ACTIF"
         },
         loading: false,
-        modalInstance: null, motos: [], livreurs: []
-
+        modalInstance: null,
+        motos: [],
+        livreurs: [],
+        // AJOUT : Propriété pour stocker l’affectation sélectionnée pour les détails
+        selectedAffectation: null
+        // FIN AJOUT
     }),
     computed: {
-        ...mapGetters({ items: 'affectations/all' }),
-
+        ...mapGetters({ items: 'affectations/all' })
     },
     methods: {
+        // AJOUT : Méthode pour afficher les détails d’une affectation
+        showDetails(item) {
+            this.selectedAffectation = item;
+            document.body.appendChild(document.getElementById('affectationDetailsModal'));
+            const modal = new bootstrap.Modal(document.getElementById('affectationDetailsModal'));
+            modal.show();
+        },
+        // FIN AJOUT
         resetForm() {
-            this.role = {},
-                this.openModal();
+            this.form = {
+                livreur: null,
+                moto: null,
+                dateDebut: "",
+                dateFin: "",
+                commentaire: "",
+                statut: "ACTIF"
+            };
+            this.openModal();
         },
         openModal() {
-            // Déplacer le modal 
             document.body.appendChild(document.getElementById('affectationModal'));
-
-            // Ouvrir le modal
             const modal = new bootstrap.Modal(document.getElementById('affectationModal'));
             modal.show();
         },
         closeModal() {
-            // Récupérer le modal
             const modalElement = document.getElementById('affectationModal');
-
-            // Créer un gestionnaire d'événements pour l'événement "hidden.bs.modal"
             const hiddenHandler = () => {
-                // Masquer manuellement le backdrop
                 const backdrop = document.querySelector('.modal-backdrop');
                 if (backdrop) {
                     backdrop.style.display = 'none';
                 }
             };
-
-            // Ajouter l'événement "hidden.bs.modal"
             modalElement.addEventListener('hidden.bs.modal', hiddenHandler);
-
-            // Fermer le modal
             const modal = bootstrap.Modal.getInstance(modalElement);
             modal.hide();
-
         },
         onSearch(offset) {
             if (offset > 0) this.page = offset;
             this.$router.push({ query: this.page }).catch(() => { });
             this.$store.dispatch('affectations/getAll', this.page)
                 .then((response) => {
-
-                })
-
+                });
         },
-
         async addAffectation() {
             this.loading = true;
             try {
                 await this.$store.dispatch('affectations/create', this.form);
-
                 ElNotification({
                     title: 'Succès',
                     message: 'Ajout effectué avec succès.',
                     type: 'success',
                     duration: 3000
                 });
-
                 this.closeModal();
                 this.onSearch();
             } catch (error) {
@@ -272,7 +313,6 @@ export default {
                 this.loading = false;
             }
         },
-
         async deleteRole(roleId) {
             const result = await Swal.fire({
                 title: 'Êtes-vous sûr ?',
@@ -284,7 +324,6 @@ export default {
                 confirmButtonText: 'Oui, supprimer',
                 cancelButtonText: 'Annuler'
             });
-
             if (result.isConfirmed) {
                 try {
                     await this.$store.dispatch('affectations/del', roleId);
@@ -294,7 +333,7 @@ export default {
                         type: 'success',
                         duration: 3000
                     });
-                    this.onSearch(); // recharge la liste
+                    this.onSearch();
                 } catch (error) {
                     console.error('Erreur lors de la suppression :', error);
                     ElNotification({
@@ -313,22 +352,20 @@ export default {
             this.$store.dispatch('motos/getAllMotoDisponible')
                 .then((response) => {
                     this.motos = response;
-                })
+                });
         },
         getAllLivreurs() {
             const type = 'YTS';
             this.$store.dispatch('livreurs/getAllLivreurYts', type)
                 .then((response) => {
                     this.livreurs = response;
-                })
-        },
-
+                });
+        }
     },
     created() {
         this.onSearch();
         this.getAllMotos();
         this.getAllLivreurs();
-    },
-
+    }
 }
 </script>

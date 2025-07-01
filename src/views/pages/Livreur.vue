@@ -124,6 +124,7 @@
 
                     <div class="modal-body">
                         <!-- Statistiques -->
+                        
                         <div class="row mb-4">
                             <div class="col-md-3 mb-3">
                                 <div class="card text-center shadow-sm">
@@ -156,6 +157,26 @@
                                         <h4>{{ livreursStat.montantTotal?.toLocaleString() ?? 0 }} F CFA</h4>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <h4>informations livreurs</h4>
+<!-- 
+                        <pre>{{ livreur }}</pre> -->
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <p><strong>Nom:</strong> {{ livreur.nom }}</p>
+                                <p><strong>Prénom:</strong> {{ livreur.prenom }}</p>
+                                <p><strong>Email:</strong> {{ livreur.email }}</p>
+                                <p><strong>Contact:</strong> {{ livreur.telephone }}</p>
+                                <p><strong>Date de Naissance:</strong> {{ formatDate(livreur.dateNaissance) }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Type de Pièce:</strong> {{ livreur.typePiece }}</p>
+                                <p><strong>N° de Pièce d'Identité:</strong> {{ livreur.numeroPieceIdentite }}</p>
+                                <p><strong>Situation Matrimoniale:</strong> {{ livreur.situationMatrimoniale }}</p>
+                                <p><strong>Type de Contrat:</strong> {{ livreur.typeLivreur }}</p>
+                                <p><strong>Statut:</strong> {{ livreur.statut }}</p>
                             </div>
                         </div>
 
