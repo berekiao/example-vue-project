@@ -133,19 +133,19 @@
                     </div>
                     <div class="col-md-3">
                         <label for="filterNom" class="form-label">Prénom</label>
-                        <input type="text" v-model="filterPrenom" class="form-control" id="filterNom" placeholder="Rechercher un nom">
+                        <input type="text" v-model="filterPrenom" class="form-control" id="filterNom" placeholder="Rechercher un prénom">
                     </div>
                     <div class="col-md-3">
                         <label for="filterNom" class="form-label">Email</label>
-                        <input type="text" v-model="filterEmail" class="form-control" id="filterNom" placeholder="Rechercher un nom">
+                        <input type="text" v-model="filterEmail" class="form-control" id="filterNom" placeholder="Rechercher un email">
                     </div>
                     <div class="col-md-3">
                         <label for="filterContact" class="form-label">Contact</label>
-                        <input type="text" v-model="filterContact" class="form-control" id="filterContact" placeholder="Contact">
+                        <input type="text" v-model="filterContact" class="form-control" id="filterContact" placeholder="Rechercher un contact">
                     </div>
                     <div class="col-md-3 mt-2">
                         <label for="filterStructure" class="form-label">Structure</label>
-                        <input type="text" v-model="filterStructure" class="form-control" id="filterStructure" placeholder="Structure">
+                        <input type="text" v-model="filterStructure" class="form-control" id="filterStructure" placeholder="Rechercher une structure">
                     </div>
                     <div class="col-md-3 mt-2">
                         <label for="filterStatut" class="form-label">Statut</label>
