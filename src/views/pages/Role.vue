@@ -309,7 +309,7 @@ export default {
         }
 
         const addPost = () => {
-            console.log("New post added");
+            console.log("New post added"); 
         };
 
         return {
