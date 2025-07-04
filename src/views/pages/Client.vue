@@ -45,6 +45,7 @@
                                         <label for="statut" class="form-label">Statut</label>
                                         <select class="form-control" v-model="form.statut" id="statut">
                                             <option value="ACTIF">Actif</option>
+                                            <option value="VIP">VIP</option>
                                             <option value="INACTIF">Inactif</option>
                                         </select>
                                     </div>
@@ -144,13 +145,14 @@
                         <input type="text" v-model="filterContact" class="form-control" id="filterContact" placeholder="Rechercher un contact">
                     </div>
                     <div class="col-md-3 mt-2">
-                        <label for="filterStructure" class="form-label">Structure</label>
-                        <input type="text" v-model="filterStructure" class="form-control" id="filterStructure" placeholder="Rechercher une structure">
+                        <label for="filterStructure" class="form-label">Société</label>
+                        <input type="text" v-model="filterSociete" class="form-control" id="filterStructure" placeholder="Rechercher une structure">
                     </div>
                     <div class="col-md-3 mt-2">
                         <label for="filterStatut" class="form-label">Statut</label>
                         <select class="form-control" id="filterStatut" v-model="filterStatut">
                             <option value="ACTIF">Actif</option>
+                            <option value="VIP">VIP</option>
                             <option value="INACTIF">Inactif</option>
                         </select>
                     </div>
@@ -188,8 +190,9 @@
                                 <td>{{ item?.email }}</td>
                                 <td>{{ item?.societe }}</td>
                                 <td>
-                                    <span class="badge badge-success" v-if="item?.statut">{{ item?.statut }}</span>
-                                    <span class="badge badge-danger" v-else>{{ item?.statut }}</span>
+                                    <span class="badge badge-success" v-if="item?.statut === 'ACTIF'">{{ item?.statut }}</span>
+                                    <span class="badge badge-danger" v-if="item?.statut === 'INACTIF'">{{ item?.statut }}</span>
+                                    <span class="badge badge-warning" v-if="item?.statut === 'VIP'">{{ item?.statut }}</span>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic example">
