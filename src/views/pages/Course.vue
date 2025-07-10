@@ -221,11 +221,11 @@
               </div>
               <div class="col-6 mb-3">
                 <label class="form-label">Date & Heure Départ</label>
-                <p>{{ selectedCourse?.dateHeureCommande || 'Non renseigné' }}</p>
+                <p>{{ formatDate(selectedCourse?.dateHeureCommande) || 'Non renseigné' }}</p>
               </div>
               <div class="col-6 mb-3">
                 <label class="form-label">Date & Heure Livraison</label>
-                <p>{{ selectedCourse?.dateHeureLivraison || 'Non renseigné' }}</p>
+                <p>{{ formatDate(selectedCourse?.dateHeureLivraison) || 'Non renseigné' }}</p>
               </div>
               <div class="col-6 mb-3">
                 <label class="form-label">Nom Destinataire</label>
@@ -250,6 +250,36 @@
               <div class="col-12 mb-3">
                 <label class="form-label">Détail Course</label>
                 <p>{{ selectedCourse?.commentaire || 'Non renseigné' }}</p>
+              </div>
+            </div>
+
+            <h5 class="mt-4">Moto Utilisé</h5>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label">Marque</label>
+                <p>{{ selectedCourse?.moto?.marque || 'Non renseigné' }}</p>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">Modele</label>
+                <p>{{ selectedCourse?.moto?.modele || 'Non renseigné' }}</p>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">Matricule</label>
+                <p>{{ selectedCourse?.moto?.matricule || 'Non renseigné' }}</p>
+              </div>
+            </div>
+
+            <h5 class="mt-2">Temps de Course</h5>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <p>
+                  <span v-if="selectedCourse?.dateHeureCommande && selectedCourse?.dateHeureLivraison">
+                    {{ getCourseDuration(selectedCourse.dateHeureCommande, selectedCourse.dateHeureLivraison) }}
+                  </span>
+                  <span v-else>
+                    Non renseigné
+                  </span>
+                </p>
               </div>
             </div>
 
@@ -434,6 +464,7 @@ import { mapActions, mapGetters } from "vuex";
 import { ElMessage, ElNotification } from "element-plus";
 import Swal from 'sweetalert2'
 import PaginationNew from "../../components/PaginationNew.vue";
+import moment from "moment";
 
 export default {
     components: {
@@ -472,6 +503,9 @@ export default {
         }
     },
     methods: {
+        formatDate(date) {
+            return date ? moment(date).format('LLL') : '';
+        },
         resetForm() {
             this.form = {
                 client: '',
@@ -730,7 +764,21 @@ export default {
             .then((response) => {
                 this.livreurs = response;
             });
-        }
+        },
+        getCourseDuration(start, end) {
+          if (!start || !end) return 'Non renseigné';
+          const startDate = moment(start);
+          const endDate = moment(end);
+          const duration = moment.duration(endDate.diff(startDate));
+          const hours = Math.floor(duration.asHours());
+          const minutes = duration.minutes();
+          const seconds = duration.seconds();
+          let result = '';
+          if (hours > 0) result += `${hours}h `;
+          if (minutes > 0) result += `${minutes}min `;
+          if (seconds > 0 || (!hours && !minutes)) result += `${seconds}s`;
+          return result.trim();
+        },
     },
     created() {
         this.onSearch();
