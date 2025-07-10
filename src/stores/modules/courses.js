@@ -44,6 +44,14 @@ const actions = {
         cxt.commit("SET_ONE", data);
         return data;
     },
+    async terminer(cxt, id) {
+        let { data } = await client.put('courses/' + id + '/livrer');
+        return data;
+    },
+    async payementEffectuer(cxt, id) {
+        let { data } = await client.put('courses/' + id + '/payer');
+        return data;
+    },
     async getAllMotoDisponible(cxt) {
         let data = await client.get('courses/disponibles');
         cxt.commit("SET_ALL", data);

@@ -36,8 +36,8 @@
                                         <select class="form-control" id="statut" v-model="form.statut">
                                             <option value="DISPONIBLE">Disponible</option>
                                             <option value="EN_COURSE">En cours d’utilisation</option>
-                                            <option value="EN_MAINTENANCE">En panne</option>
-                                            <option value="HORS_SERVICE">En panne</option>
+                                            <option value="EN_MAINTENANCE">En Maintenance</option>
+                                            <option value="HORS_SERVICE">Hors Service</option>
                                         </select>
                                     </div>
                                     <div>

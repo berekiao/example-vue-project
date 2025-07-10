@@ -46,7 +46,6 @@ const actions = {
     },
     async getAllLivreurYts(cxt, type) {
         let data = await client.get(`livreurs/type/${type}`);
-        cxt.commit("SET_ALL", data);
         return data;
     },
     async getAllP({ commit }, params = {}) {
@@ -82,6 +81,10 @@ const actions = {
     },
     getAffectationById(cxt, livreurId) {
         let data = client.get(`affectations-moto/livreurs/${livreurId}/motos/historique`);
+        return data;
+    },
+    async getAllLivreurActive(cxt, statut) {
+        let data = await client.get(`livreurs/statut/${statut}`);
         return data;
     },
 };
