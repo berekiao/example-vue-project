@@ -68,8 +68,8 @@
                   <label>Type Course</label>
                   <select class="form-control" v-model="form.typeCourse">
                     <option value="">Sélectionner le type</option>
-                    <option value="TRANSMISSION_PRODUITS">Transmission de produits</option>
-                    <option value="FOURNITURE_SERVICES">Fourniture de services</option>
+                    <option value="LIVRAISON_COLIS">Livraion de Colis</option>
+                    <option value="PRESTATION_SERVICES">Prestation de Services</option>
                   </select>
                 </div>
                 <div class="col-6 mb-3">
@@ -90,19 +90,23 @@
                 </div>
                 <div class="col-6 mb-3">
                   <label>Frais de Livraison</label>
-                  <input type="text" class="form-control" v-model="form.fraisLivraison" />
+                  <input type="number" class="form-control" v-model="form.fraisLivraison" />
                 </div>
                 <div class="col-6 mb-3">
                   <label>Règlement</label>
-                  <input type="text" class="form-control" v-model="form.reglement" />
+                  <select class="form-control" v-model="form.reglement">
+                    <option value="">Sélectionner le Règlement</option>
+                    <option value="CLIENT">Client</option>
+                    <option value="DESTINATAIRE">Destinataire</option>
+                  </select>
                 </div>
                 <div class="col-6 mb-3">
                   <label>Frais à Restituer</label>
-                  <input type="text" class="form-control" v-model="form.fraisRestituer" />
+                  <input type="number" class="form-control" v-model="form.fraisRestituer" />
                 </div>
                 <div class="col-6 mb-3">
                   <label>Téléphone Destinataire</label>
-                  <input type="text" class="form-control" v-model="form.telephoneDestinataire" placeholder="01XXXXXXXX" />
+                  <input type="number" class="form-control" v-model="form.telephoneDestinataire" placeholder="01XXXXXXXX" />
                 </div>
                 <div class="col-12 mb-3">
                   <label>Détail Course</label>

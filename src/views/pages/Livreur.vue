@@ -3,7 +3,7 @@
 
         <div class="modal fade" id="livreurModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="livreurLabel"
             aria-hidden="true" style="backdrop-filter: blur(10px);">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content border-0">
 
                     <div class="modal-header border-0 pb-0 align-items-start">
@@ -15,29 +15,39 @@
 
                     <div class="modal-body">
                         <form>
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-3">
+                            <div>
+                                <div class="row">
+                                    <div class="col-6 mb-3">
                                         <label for="nom" class="form-label">Nom</label>
                                         <input type="text" class="form-control" id="nom" placeholder="Nom"
                                             v-model="form.nom">
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
                                         <label for="prenom" class="form-label">Prénom</label>
                                         <input type="text" class="form-control" id="prenom" placeholder="Prénom"
                                             v-model="form.prenom">
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
                                         <label for="email" class="form-label">Email</label>
                                         <input type="email" class="form-control" id="email" placeholder="Adresse email"
                                             v-model="form.email">
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
+                                        <label for="prenom" class="form-label">Npi</label>
+                                        <input type="text" class="form-control" id="prenom" placeholder="Npi"
+                                            v-model="form.npi">
+                                    </div>
+                                    <div class="col-6 mb-3">
                                         <label for="contact" class="form-label">Contact</label>
                                         <input type="text" class="form-control" id="contact"
                                             placeholder="Numéro de téléphone" v-model="form.telephone">
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
+                                        <label for="prenom" class="form-label">Adresse</label>
+                                        <input type="text" class="form-control" id="prenom" placeholder="Adresse"
+                                            v-model="form.adresse">
+                                    </div>
+                                    <div class="col-6 mb-3">
                                         <label for="typeContrat" class="form-label">Type de pièce</label>
                                         <select class="form-control" id="typeContrat" v-model="form.typePiece">
                                             <option value="CIP">CIP</option>
@@ -45,17 +55,17 @@
                                             <option value="CIN">CIN</option>
                                         </select>
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
                                         <label for="pieceIdentite" class="form-label">Pièce d'identité</label>
                                         <input type="text" class="form-control" id="pieceIdentite"
                                             placeholder="N° de pièce ou référence" v-model="form.numeroPieceIdentite">
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
                                         <label for="prenom" class="form-label">Date de naissance</label>
-                                        <input type="date" class="form-control" id="prenom" placeholder="Date de naissance"
-                                            v-model="form.dateNaissance">
+                                        <input type="date" class="form-control" id="prenom"
+                                            placeholder="Date de naissance" v-model="form.dateNaissance">
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
                                         <label for="statut" class="form-label">Situation Matrimoniale</label>
                                         <select class="form-control" id="statut" v-model="form.situationMatrimoniale">
                                             <option value="CELIBATAIRE">Celibataire</option>
@@ -64,29 +74,51 @@
                                             <option value="VEUF">Veuf</option>
                                         </select>
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
                                         <label for="typeContrat" class="form-label">Type de contrat</label>
                                         <select class="form-control" id="typeContrat" v-model="form.typeLivreur">
                                             <option value="INDEPENDANT">Indépendant</option>
                                             <option value="YTS">Yts</option>
                                         </select>
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
+                                        <label for="prenom" class="form-label">Date début de contrat</label>
+                                        <input type="date" class="form-control" id="prenom"
+                                            placeholder="Date de naissance" v-model="form.dateDebutContrat">
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label for="prenom" class="form-label">Date fin de contrat</label>
+                                        <input type="date" class="form-control" id="prenom"
+                                            placeholder="Date de naissance" v-model="form.dateFinContrat">
+                                    </div>
+                                    <div class="col-6 mb-3">
                                         <label for="contact" class="form-label">Personne d'Urgence à Contacter</label>
                                         <input type="text" class="form-control" id="contact"
                                             placeholder="Personne d'Urgence à Contacter" v-model="form.personneUrgence">
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
                                         <label for="contact" class="form-label">Contact d'Urgence</label>
                                         <input type="text" class="form-control" id="contact"
                                             placeholder="Contact d'Urgence" v-model="form.contactUrgence">
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="col-6 mb-3">
                                         <label for="statut" class="form-label">Statut</label>
                                         <select class="form-control" id="statut" v-model="form.statut">
                                             <option value="ACTIF">Actif</option>
                                             <option value="INACTIF">Inactif</option>
                                         </select>
+                                    </div>
+
+                                    <div class="col-12 mb-3">
+                                        <label for="statut" class="form-label">Photo</label>
+                                        <FilePond
+                                            ref="filePond"
+                                            name="file"
+                                            :server="uploadConfig"
+                                            accepted-file-types="image/*"
+                                            label-idle="Déposez votre image ou cliquez pour sélectionner"
+                                            @processfile="UploadResponse"
+                                        />
                                     </div>
                                     
                                     
@@ -110,8 +142,8 @@
             </div>
         </div>
 
-        <div class="modal fade" id="detailLivreur" data-bs-backdrop="static" tabindex="-1" aria-labelledby="livreurLabel"
-            aria-hidden="true" style="backdrop-filter: blur(10px);">
+        <div class="modal fade" id="detailLivreur" data-bs-backdrop="static" tabindex="-1"
+            aria-labelledby="livreurLabel" aria-hidden="true" style="backdrop-filter: blur(10px);">
             <div class="modal-dialog modal-xl modal-dialog-centered">
                 <div class="modal-content border-0">
 
@@ -124,7 +156,7 @@
 
                     <div class="modal-body">
                         <!-- Statistiques -->
-                        
+
                         <div class="row mb-4">
                             <div class="col-md-3 mb-3">
                                 <div class="card text-center shadow-sm">
@@ -160,7 +192,7 @@
                             </div>
                         </div>
                         <h4>informations livreurs</h4>
-<!-- 
+                        <!-- 
                         <pre>{{ livreur }}</pre> -->
 
                         <div class="row mb-4">
@@ -265,8 +297,7 @@
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Livreurs</h1>
-            <a href="#" @click="openModal"
-                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <a href="#" @click="openModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                 Nouveau Livreur
             </a>
         </div>
@@ -274,67 +305,73 @@
         <div class="card mb-4">
             <div class="card-body">
                 <form class="row g-3 align-items-end">
-                <div class="col-md-2">
-                    <label for="filterNom" class="form-label">Nom</label>
-                    <input type="text" class="form-control" id="filterNom" placeholder="Nom" v-model="filterNom">
-                </div>
-                <div class="col-md-2">
-                    <label for="filterPrenom" class="form-label">Prénom</label>
-                    <input type="text" class="form-control" id="filterPrenom" placeholder="Prénom" v-model="filterPrenom">
-                </div>
-                <div class="col-md-2">
-                    <label for="filterEmail" class="form-label">Email</label>
-                    <input type="text" class="form-control" id="filterEmail" placeholder="Email" v-model="filterEmail">
-                </div>
-                <div class="col-md-2">
-                    <label for="filterTelephone" class="form-label">Contact</label>
-                    <input type="text" class="form-control" id="filterTelephone" placeholder="Contact" v-model="filterTelephone">
-                </div>
-                <div class="col-md-2">
-                    <label for="filterSituationMatrimoniale" class="form-label">Situation Matrimoniale</label>
-                    <select class="form-control" id="filterSituationMatrimoniale" v-model="filterSituationMatrimoniale">
-                        <option value="">Toutes</option>
-                        <option value="CELIBATAIRE">Célibataire</option>
-                        <option value="MARIE">Marié</option>
-                        <option value="DIVORCE">Divorcé</option>
-                        <option value="VEUF">Veuf</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="filterTypeLivreur" class="form-label">Type de contrat</label>
-                    <select class="form-control" id="filterTypeLivreur" v-model="filterTypeLivreur">
-                        <option value="">Tous</option>
-                        <option value="INDEPENDANT">Indépendant</option>
-                        <option value="YTS">Yts</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="filterStatut" class="form-label">Statut</label>
-                    <select class="form-control" id="filterStatut" v-model="filterStatut">
-                        <option value="">Tous</option>
-                        <option value="ACTIF">Actif</option>
-                        <option value="INACTIF">Inactif</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="filterTypePiece" class="form-label">Type de pièce</label>
-                    <select class="form-control" id="filterTypePiece" v-model="filterTypePiece">
-                        <option value="">Toutes</option>
-                        <option value="CIP">CIP</option>
-                        <option value="PASSPORT">PASSPORT</option>
-                        <option value="CIN">CIN</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="filterNumeroPiece" class="form-label">N° de pièce</label>
-                    <input type="text" class="form-control" id="filterNumeroPiece" placeholder="N° de pièce" v-model="filterNumeroPiece">
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-primary w-100" @click="onSearch(1)">Filtrer</button>
-                </div>
-            </form>
+                    <div class="col-md-2">
+                        <label for="filterNom" class="form-label">Nom</label>
+                        <input type="text" class="form-control" id="filterNom" placeholder="Nom" v-model="filterNom">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="filterPrenom" class="form-label">Prénom</label>
+                        <input type="text" class="form-control" id="filterPrenom" placeholder="Prénom"
+                            v-model="filterPrenom">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="filterEmail" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="filterEmail" placeholder="Email"
+                            v-model="filterEmail">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="filterTelephone" class="form-label">Contact</label>
+                        <input type="text" class="form-control" id="filterTelephone" placeholder="Contact"
+                            v-model="filterTelephone">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="filterSituationMatrimoniale" class="form-label">Situation Matrimoniale</label>
+                        <select class="form-control" id="filterSituationMatrimoniale"
+                            v-model="filterSituationMatrimoniale">
+                            <option value="">Toutes</option>
+                            <option value="CELIBATAIRE">Célibataire</option>
+                            <option value="MARIE">Marié</option>
+                            <option value="DIVORCE">Divorcé</option>
+                            <option value="VEUF">Veuf</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="filterTypeLivreur" class="form-label">Type de contrat</label>
+                        <select class="form-control" id="filterTypeLivreur" v-model="filterTypeLivreur">
+                            <option value="">Tous</option>
+                            <option value="INDEPENDANT">Indépendant</option>
+                            <option value="YTS">Yts</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="filterStatut" class="form-label">Statut</label>
+                        <select class="form-control" id="filterStatut" v-model="filterStatut">
+                            <option value="">Tous</option>
+                            <option value="ACTIF">Actif</option>
+                            <option value="INACTIF">Inactif</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="filterTypePiece" class="form-label">Type de pièce</label>
+                        <select class="form-control" id="filterTypePiece" v-model="filterTypePiece">
+                            <option value="">Toutes</option>
+                            <option value="CIP">CIP</option>
+                            <option value="PASSPORT">PASSPORT</option>
+                            <option value="CIN">CIN</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="filterNumeroPiece" class="form-label">N° de pièce</label>
+                        <input type="text" class="form-control" id="filterNumeroPiece" placeholder="N° de pièce"
+                            v-model="filterNumeroPiece">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary w-100" @click="onSearch(1)">Filtrer</button>
+                    </div>
+                </form>
             </div>
         </div>
+
 
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
@@ -385,10 +422,10 @@
 
 
                         </tbody>
-                        
+
                     </table>
                     <PaginationNew :currentPage="items.number + 1" :totalPages="items.totalPages"
-                            :totalItems="items.totalElements || 0" :onPageChange="onSearch" />
+                        :totalItems="items.totalElements || 0" :onPageChange="onSearch" />
                 </div>
             </div>
         </div>
@@ -402,10 +439,23 @@ import { ElMessage, ElNotification } from "element-plus";
 import Swal from 'sweetalert2'
 import PaginationNew from "../../components/PaginationNew.vue";
 
+import vueFilePond from "vue-filepond";
+import "filepond/dist/filepond.min.css";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+
+const FilePond = vueFilePond(
+    FilePondPluginFileValidateType,
+    FilePondPluginImagePreview
+);
+ 
+import { VUE_APP_API_URL } from "@/config/config";
+
 
 export default {
     components: {
-        PaginationNew
+        PaginationNew, FilePond
     },
     name: 'clients',
     props: {
@@ -428,13 +478,36 @@ export default {
         },
         loading: false,
         modalInstance: null, filterNom: "", filterPrenom: "", filterEmail: "", filterTelephone: "", filterSituationMatrimoniale: "", filterSituationMatrimoniale: "", filterTypeLivreur: "", filterStatut: "", filterTypePiece: "", filterNumeroPiece: "",
-        livreurCourse: [], livreursStat : [], livreur: {}, livreurAffectation: []
+        livreurCourse: [], livreursStat: [], livreur: {}, livreurAffectation: [],
+        reponseUpload: null
 
     }),
     computed: {
         ...mapGetters({ items: 'livreurs/all' }),
         filterItems() {
             return this.items.content;
+        },
+        user() {
+            return JSON.parse(localStorage.getItem('userConnected'));
+        },
+        uploadConfig() {
+            return {
+                url: `${VUE_APP_API_URL}fichier/add`,
+                process: {
+                    url: "/",
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${this.user ? this.user.token : ''}`
+                    },
+                    withCredentials: false,
+                    onload: (response) => {
+                        return response;
+                    },
+                    onerror: (error) => {
+                        console.error("Erreur d'upload:", error);
+                    },
+                },
+            };
         }
     },
     methods: {
@@ -483,13 +556,13 @@ export default {
                 situationMatrimoniale: this.filterSituationMatrimoniale,
                 typeLivreur: this.filterTypeLivreur,
                 statut: this.filterStatut,
-                typePiece: this.filterTypePiece, 
+                typePiece: this.filterTypePiece,
                 numeroPieceIdentite: this.filterNumeroPiece
             };
             this.$store.dispatch('livreurs/getAllP', params)
                 .then((response) => {
                 })
-                
+
         },
         async addLivreur() {
             this.loading = true;
@@ -584,7 +657,7 @@ export default {
         async statByLivreur(id) {
             const response = await this.$store.dispatch('livreurs/statByLivreur', id);
             if (response) {
-                this.livreursStat = response 
+                this.livreursStat = response
             }
         },
         async getInfoById(id) {
@@ -617,12 +690,26 @@ export default {
                 case 'EN_COURS': return 'badge bg-warning text-light';
                 default: return 'badge bg-secondary text-light';
             }
-        }
+        },
+        uploadConfig() {
+            return {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+        },
+        UploadResponse(error, file) {
+            if (!error) {
+                const reponse = JSON.parse(file.serverId);
+                this.reponseUpload = reponse;
+            }
+        },
 
     },
     created() {
         this.onSearch();
     },
+   
 
 }
 </script>
