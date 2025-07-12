@@ -188,8 +188,8 @@
                                     <div class="btn-group" role="group">
                                         <button type="button" @click="editMoto(item)" class="btn btn-primary"><i
                                                 class="fas fa-edit"></i></button>
-                                        <button type="button" @click="deleteMoto(item.id)" class="btn btn-danger"><i
-                                                class="fas fa-trash"></i></button>
+                                                            <button type="button" @click="deleteMoto(item.id)" class="btn btn-danger" v-if="isSuperAdmin"><i
+                            class="fas fa-trash"></i></button>
                                         <!-- AJOUT : Bouton Détails -->
                                         <button type="button" @click="showDetails(item)" class="btn btn-info"><i
                                                 class="fas fa-eye"></i></button>
@@ -245,6 +245,12 @@ export default {
         ...mapGetters({ items: 'motos/all' }),
         filteredItems() {
             return this.items.content;
+        },
+        user() {
+            return JSON.parse(localStorage.getItem('userConnected'));
+        },
+        isSuperAdmin() {
+            return this.user?.role?.nomRole === "SUPERADMIN";
         }
     },
     methods: {

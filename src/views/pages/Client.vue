@@ -199,9 +199,9 @@
                                         <button type="button" class="btn btn-primary" @click="updateRole(item)">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger" @click="deleteRole(item.id)">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                                            <button type="button" class="btn btn-danger" @click="deleteRole(item.id)" v-if="isSuperAdmin">
+                        <i class="fas fa-trash"></i>
+                    </button>
                                         <!-- AJOUT : Bouton Détails -->
                                         <button type="button" class="btn btn-info" @click="showDetails(item)">
                                             <i class="fas fa-eye"></i>
@@ -259,6 +259,12 @@ export default {
         ...mapGetters({ items: 'clients/all' }),
         filterItems() {
             return this.items.content;
+        },
+        user() {
+            return JSON.parse(localStorage.getItem('userConnected'));
+        },
+        isSuperAdmin() {
+            return this.user?.role?.nomRole === "SUPERADMIN";
         }
     },
     methods: {

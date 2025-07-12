@@ -25,6 +25,14 @@
                                         <input type="text" class="form-control" id="prenom" placeholder="Prénom" v-model="form.prenom">
                                     </div>
                                     <div class="mb-3">
+                                        <label for="username" class="form-label">Nom d'utilisateur</label>
+                                        <input type="text" class="form-control" id="username" placeholder="Nom d'utilisateur" v-model="form.username">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Mot de passe</label>
+                                        <input type="password" class="form-control" id="password" placeholder="Mot de passe" v-model="form.password">
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="telephone" class="form-label">Contact</label>
                                         <input type="text" class="form-control" id="telephone" placeholder="Téléphone" v-model="form.telephone">
                                     </div>
@@ -173,7 +181,7 @@
                                         <button type="button" class="btn btn-primary" @click="updateUser(item)">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger" @click="deleteUser(item.id)">
+                                        <button type="button" class="btn btn-danger" @click="deleteUser(item.id)" v-if="isSuperAdmin">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         <button type="button" class="btn btn-info" @click="showDetails(item)">
@@ -207,6 +215,8 @@ export default {
         form: {
             nom: "",
             prenom: "",
+            username: "",
+            password: "",
             telephone: "",
             email: "",
             role: null
@@ -224,6 +234,12 @@ export default {
         ...mapGetters({ items: 'users/all' }),
         filterItems() {
             return this.items.content;
+        },
+        user() {
+            return JSON.parse(localStorage.getItem('userConnected'));
+        },
+        isSuperAdmin() {
+            return this.user?.role?.nomRole === "SUPERADMIN";
         }
     },
     methods: {

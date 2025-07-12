@@ -389,14 +389,30 @@
 
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
-            <div class="card-header py-3">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">Liste des livreurs</h6>
+                <div v-if="selectedLivreurs.length > 0" class="d-flex align-items-center">
+                    <span class="me-3 text-muted">{{ selectedLivreurs.length }} livreur(s) sélectionné(s)</span>
+                    <button type="button" class="btn btn-success btn-sm" @click="activerMultipleLivreurs" :disabled="loading">
+                        <i class="fas fa-check"></i> Activer les sélectionnés
+                        <span v-if="loading" class="spinner-border spinner-border-sm ms-1"></span>
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
+                                <th>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAll" 
+                                               v-model="selectAll" @change="toggleSelectAll">
+                                        <label class="form-check-label" for="selectAll">
+                                            Tout
+                                        </label>
+                                    </div>
+                                </th>
                                 <th>Nº</th>
                                 <th>Photo</th>
                                 <th>Nom</th>
@@ -411,6 +427,14 @@
                         </thead>
                         <tbody>
                             <tr v-for="(item, index) in filterItems" :key="index">
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               :id="'livreur-' + item.id"
+                                               :value="item.id"
+                                               v-model="selectedLivreurs">
+                                    </div>
+                                </td>
                                 <td>{{ index + 1 }}</td>
                                 <td>
                                     <img 
@@ -427,17 +451,23 @@
                                 <td>{{ item.numeroPieceIdentite }}</td>
                                 <td>{{ item.typeLivreur }}</td>
                                 <td>
-                                    <span class="badge badge-success" v-if="item?.statut">{{ item?.statut }}</span>
-                                    <span class="badge badge-danger" v-else>{{ item?.statut }}</span>
+                                    <span class="badge badge-success" v-if="item?.statut === 'ACTIF'">{{ item?.statut }}</span>
+                                    <span class="badge badge-danger" v-else>{{ item?.statut || 'INACTIF' }}</span>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
                                         <button type="button" @click="editMoto(item)" class="btn btn-primary"><i
                                                 class="fas fa-edit"></i></button>
-                                        <button type="button" @click="deleteMoto(item.id)" class="btn btn-danger"><i
+                                        <button type="button" @click="deleteMoto(item.id)" class="btn btn-danger" v-if="isSuperAdmin"><i
                                                 class="fas fa-trash"></i></button>
                                         <button type="button" @click="detailLivreur(item)" class="btn btn-secondary"><i
                                                 class="fas fa-info"></i></button>
+                                        <button type="button" @click="activerLivreur(item.id)" 
+                                                class="btn btn-success" 
+                                                :disabled="item?.statut === 'ACTIF'"
+                                                :title="item?.statut === 'ACTIF' ? 'Déjà actif' : 'Activer le livreur'">
+                                            <i class="fas fa-check"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -507,6 +537,8 @@ export default {
         modalInstance: null, filterNom: "", filterPrenom: "", filterEmail: "", filterTelephone: "", filterSituationMatrimoniale: "", filterSituationMatrimoniale: "", filterTypeLivreur: "", filterStatut: "", filterTypePiece: "", filterNumeroPiece: "",
         livreurCourse: [], livreursStat: [], livreur: {}, livreurAffectation: [],
         reponseUpload: null,
+        selectedLivreurs: [],
+        selectAll: false,
 
     }),
     computed: {
@@ -516,6 +548,9 @@ export default {
         },
         user() {
             return JSON.parse(localStorage.getItem('userConnected'));
+        },
+        isSuperAdmin() {
+            return this.user?.role?.nomRole === "SUPERADMIN";
         },
         uploadConfig() {
             return {
@@ -799,7 +834,88 @@ export default {
                 this.reponseUpload = reponse;
             }
         },
+        toggleSelectAll() {
+            if (this.selectAll) {
+                this.selectedLivreurs = this.filterItems.map(item => item.id);
+            } else {
+                this.selectedLivreurs = [];
+            }
+        },
+        async activerLivreur(livreurId) {
+            try {
+                await this.$store.dispatch('livreurs/activerLivreur', livreurId);
+                ElNotification({
+                    title: 'Succès',
+                    message: 'Livreur activé avec succès.',
+                    type: 'success',
+                    duration: 3000
+                });
+                this.onSearch(); // Recharger la liste
+            } catch (error) {
+                console.error('Erreur lors de l\'activation du livreur:', error);
+                ElNotification({
+                    title: 'Erreur',
+                    message: 'Erreur lors de l\'activation du livreur.',
+                    type: 'error',
+                    duration: 3000
+                });
+            }
+        },
+        async activerMultipleLivreurs() {
+            if (this.selectedLivreurs.length === 0) {
+                ElNotification({
+                    title: 'Attention',
+                    message: 'Veuillez sélectionner au moins un livreur.',
+                    type: 'warning',
+                    duration: 3000
+                });
+                return;
+            }
 
+            const result = await Swal.fire({
+                title: 'Confirmer l\'activation',
+                text: `Voulez-vous activer ${this.selectedLivreurs.length} livreur(s) ?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, activer',
+                cancelButtonText: 'Annuler'
+            });
+
+            if (result.isConfirmed) {
+                this.loading = true;
+                try {
+                    await this.$store.dispatch('livreurs/activerMultipleLivreurs', this.selectedLivreurs);
+                    ElNotification({
+                        title: 'Succès',
+                        message: `${this.selectedLivreurs.length} livreur(s) activé(s) avec succès.`,
+                        type: 'success',
+                        duration: 3000
+                    });
+                    this.selectedLivreurs = [];
+                    this.selectAll = false;
+                    this.onSearch(); // Recharger la liste
+                } catch (error) {
+                    console.error('Erreur lors de l\'activation multiple:', error);
+                    ElNotification({
+                        title: 'Erreur',
+                        message: 'Erreur lors de l\'activation des livreurs.',
+                        type: 'error',
+                        duration: 3000
+                    });
+                } finally {
+                    this.loading = false;
+                }
+            }
+        },
+
+    },
+    watch: {
+        selectedLivreurs(newVal) {
+            // Mettre à jour l'état de "Tout sélectionner"
+            this.selectAll = newVal.length === this.filterItems.length && this.filterItems.length > 0;
+        }
     },
     created() {
         this.onSearch();

@@ -127,7 +127,7 @@
                                         <button type="button" class="btn btn-primary" @click="updatePermission(item)">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger" @click="deletePermission(item.id)">
+                                        <button type="button" class="btn btn-danger" @click="deletePermission(item.id)" v-if="isSuperAdmin">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         <button type="button" class="btn btn-info" @click="showDetails(item)">
@@ -172,6 +172,12 @@ export default {
         ...mapGetters({ items: 'permissions/all' }),
         filterItems() {
             return this.items.content;
+        },
+        user() {
+            return JSON.parse(localStorage.getItem('userConnected'));
+        },
+        isSuperAdmin() {
+            return this.user?.role?.nomRole === "SUPERADMIN";
         }
     },
     methods: {

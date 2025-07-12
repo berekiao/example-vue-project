@@ -239,7 +239,13 @@
             <!-- Section moto -->
             <div class="p-3 mb-3 bg-light rounded-3">
               <h6><i class="bi bi-bicycle"></i> Moto Utilisée</h6>
-              <div class="row">
+              <div v-if="loadingMoto" class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="mt-2 text-muted">Chargement des informations de la moto...</p>
+              </div>
+              <div v-else class="row">
                 <div class="col-md-4 mb-2"><strong>Marque :</strong> {{ selectedCourse?.moto?.marque || 'Non renseigné' }}</div>
                 <div class="col-md-4 mb-2"><strong>Modèle :</strong> {{ selectedCourse?.moto?.modele || 'Non renseigné' }}</div>
                 <div class="col-md-4 mb-2"><strong>Matricule :</strong> {{ selectedCourse?.moto?.matricule || 'Non renseigné' }}</div>
@@ -415,7 +421,7 @@
                     <button type="button" @click="editItem(item)" class="btn btn-primary">
                       <i class="fas fa-edit"></i>
                     </button>
-                    <button type="button" @click="deleteItem(item.id)" class="btn btn-danger">
+                    <button type="button" @click="deleteItem(item.id)" class="btn btn-danger" v-if="isSuperAdmin">
                       <i class="fas fa-trash"></i>
                     </button>
                     <button type="button" @click="showDetails(item)" class="btn btn-info">
@@ -473,6 +479,7 @@ export default {
         clients: [],
         livreurs: [],
         loading: false,
+        loadingMoto: false,
         modalInstance: null,
         selectedCourse: null,
         // Données pour la recherche d'adresse
@@ -485,6 +492,12 @@ export default {
         ...mapGetters({ items: 'courses/all' }),
         filterItems() {
             return this.items.content;
+        },
+        user() {
+            return JSON.parse(localStorage.getItem('userConnected'));
+        },
+        isSuperAdmin() {
+            return this.user?.role?.nomRole === "SUPERADMIN";
         }
     },
     methods: {
@@ -574,11 +587,34 @@ export default {
                 this.loading = false;
             }
         },
-        showDetails(item) {
+        async showDetails(item) {
             this.selectedCourse = item;
+            this.loadingMoto = true;
+            
             document.body.appendChild(document.getElementById('courseDetailsModal'));
             const modal = new bootstrap.Modal(document.getElementById('courseDetailsModal'));
             modal.show();
+            
+            // Récupérer la moto utilisée pour cette course
+            try {
+                const motoUtilisee = await this.$store.dispatch('courses/getMotoUtilisee', item.id);
+                // Mettre à jour la course avec les informations de la moto
+                this.selectedCourse = {
+                    ...item,
+                    moto: motoUtilisee
+                };
+            } catch (error) {
+                console.error('Erreur lors de la récupération de la moto utilisée:', error);
+                // En cas d'erreur, on garde les données de base sans la moto
+                ElNotification({
+                    title: 'Attention',
+                    message: 'Impossible de récupérer les informations de la moto utilisée.',
+                    type: 'warning',
+                    duration: 3000
+                });
+            } finally {
+                this.loadingMoto = false;
+            }
         },
         onSearch(offset, size = 10) {
             const params = {

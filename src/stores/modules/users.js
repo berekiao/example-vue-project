@@ -31,7 +31,7 @@ const actions = {
         return data;
     },
     async create(cxt, payload) {
-        let { data } = payload.id ? await client.put('users/' + payload.id, payload) : await client.post('users', payload);
+        let { data } = payload.id ? await client.put('users/' + payload.id, payload) : await client.post('users/creer', payload);
         cxt.commit("SET_ONE", data);
         if (payload.id) {
             payload.id = null;

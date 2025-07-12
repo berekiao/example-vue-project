@@ -64,7 +64,7 @@
             </div>
         </li>
 
-        <li class="nav-item">
+        <li class="nav-item" v-if="isSuperAdmin">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUser"
                 aria-expanded="true" aria-controls="collapseUser">
                 <i class="fas fa-fw fa-users"></i>
@@ -89,10 +89,13 @@
 
 <script>
 export default {
-    setup() {
-
-
-        return {}
+    computed: {
+        user() {
+            return JSON.parse(localStorage.getItem('userConnected'));
+        },
+        isSuperAdmin() {
+            return this.user?.role?.nomRole === "SUPERADMIN";
+        },
     }
 }
 </script>

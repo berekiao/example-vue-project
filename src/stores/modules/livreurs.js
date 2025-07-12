@@ -87,6 +87,14 @@ const actions = {
         let data = await client.get(`livreurs/statut/${statut}`);
         return data;
     },
+    async activerLivreur(cxt, id) {
+        let data = await client.put(`livreurs/${id}/activer`);
+        return data;
+    },
+    async activerMultipleLivreurs(cxt, livreurIds) {
+        let data = await client.put('livreurs/activer-multiple', { livreurIds });
+        return data;
+    },
 };
 
 export default {

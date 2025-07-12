@@ -196,7 +196,7 @@
                                 <td>
                                     <div class="btn-group">
                                         <button class="btn btn-primary" @click="updateRole(item)"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger" @click="deleteRole(item.id)"><i class="fas fa-trash"></i></button>
+                                        <button class="btn btn-danger" @click="deleteRole(item.id)" v-if="isSuperAdmin"><i class="fas fa-trash"></i></button>
                                         <!-- AJOUT : Bouton Détails -->
                                         <button class="btn btn-info" @click="showDetails(item)"><i class="fas fa-eye"></i></button>
                                         <!-- FIN AJOUT -->
@@ -243,7 +243,13 @@ export default {
         // FIN AJOUT
     }),
     computed: {
-        ...mapGetters({ items: 'affectations/all' })
+        ...mapGetters({ items: 'affectations/all' }),
+        user() {
+            return JSON.parse(localStorage.getItem('userConnected'));
+        },
+        isSuperAdmin() {
+            return this.user?.role?.nomRole === "SUPERADMIN";
+        }
     },
     methods: {
         // AJOUT : Méthode pour afficher les détails d’une affectation

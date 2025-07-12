@@ -98,6 +98,10 @@ const actions = {
         //cxt.commit("SET_ALL", data);
         return data;
     },
+    async getMotoUtilisee(cxt, courseId) {
+        let data = await client.get(`courses/${courseId}/moto-utilisee`);
+        return data;
+    },
 };
 
 export default {
