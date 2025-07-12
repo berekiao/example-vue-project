@@ -415,7 +415,9 @@
                                 <td>
                                     <img 
                                         :src="getPhotoUrl(item.fichier?.id)" 
-                                        
+                                        alt="Photo de profil"
+                                        class="rounded-circle"
+                                        style="width: 50px; height: 50px; object-fit: cover;"
                                     >
                                 </td>
                                 <td>{{ item.nom }}</td>

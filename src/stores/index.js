@@ -8,6 +8,9 @@ import courses from './modules/courses';
 import zones from './modules/zones';
 import villes from './modules/villes';
 import quartiers from './modules/quartiers';
+import users from './modules/users';
+import permissions from './modules/permissions';
+import roles from './modules/roles';
 
 export default createStore({
   modules: {
@@ -19,6 +22,9 @@ export default createStore({
     courses,
     zones,
     villes,
-    quartiers
+    quartiers,
+    users,
+    permissions,
+    roles
   }
 });

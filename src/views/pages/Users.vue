@@ -1,13 +1,13 @@
 <template>
     <div class="container-fluid">
 
-        <!-- Modale existante pour ajout/modification -->
+        <!-- Modale pour ajout/modification -->
         <div class="modal fade" id="utilisateurModal" data-bs-backdrop="static" tabindex="-1"
             aria-labelledby="utilisateurLabel" aria-hidden="true" style="backdrop-filter: blur(10px);">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0">
                     <div class="modal-header border-0 pb-0 align-items-start">
-                        <h5 class="mb-0" id="utilisateurLabel">Ajouter un Utilisateur</h5>
+                        <h5 class="mb-0" id="utilisateurLabel">{{ form.id ? 'Modifier' : 'Ajouter' }} un Utilisateur</h5>
                         <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -25,8 +25,8 @@
                                         <input type="text" class="form-control" id="prenom" placeholder="Prénom" v-model="form.prenom">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="contact" class="form-label">Contact</label>
-                                        <input type="text" class="form-control" id="contact" placeholder="Téléphone" v-model="form.contact">
+                                        <label for="telephone" class="form-label">Contact</label>
+                                        <input type="text" class="form-control" id="telephone" placeholder="Téléphone" v-model="form.telephone">
                                     </div>
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email</label>
@@ -35,8 +35,10 @@
                                     <div class="mb-3">
                                         <label for="role" class="form-label">Rôle</label>
                                         <select class="form-control" id="role" v-model="form.role">
-                                            <option value="admin">Admin</option>
-                                            <option value="superadmin">Superadmin</option>
+                                            <option value="">Sélectionner un rôle</option>
+                                            <option v-for="role in rolesList" :key="role.id" :value="role">
+                                                {{ role.nomRole }}
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
@@ -48,8 +50,9 @@
                             <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
                                 <i class="bi-x"></i> Fermer
                             </button>
-                            <button type="button" class="btn btn-primary ms-2">
-                                <i class="bi-check"></i> Ajouter
+                            <button type="button" class="btn btn-primary ms-2" @click="addUser" :disabled="loading">
+                                <i class="bi-check"></i> {{ form.id ? 'Modifier' : 'Ajouter' }}
+                                <span v-if="loading" class="spinner-border spinner-border-sm ms-2"></span>
                             </button>
                         </div>
                     </div>
@@ -57,13 +60,13 @@
             </div>
         </div>
 
-        <!-- Modale pour afficher les détails de l’utilisateur -->
+        <!-- Modale pour afficher les détails de l'utilisateur -->
         <div class="modal fade" id="utilisateurDetailsModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="utilisateurDetailsLabel"
             aria-hidden="true" style="backdrop-filter: blur(10px);">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0">
                     <div class="modal-header border-0 pb-0 align-items-start">
-                        <h5 class="mb-0" id="utilisateurDetailsLabel">Détails de l’Utilisateur</h5>
+                        <h5 class="mb-0" id="utilisateurDetailsLabel">Détails de l'Utilisateur</h5>
                         <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -73,23 +76,23 @@
                             <div class="col-12">
                                 <div class="mb-3">
                                     <label class="form-label">Nom</label>
-                                    <p>{{ selectedUtilisateur?.nom || 'Non renseigné' }}</p>
+                                    <p>{{ selectedUser?.nom || 'Non renseigné' }}</p>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Prénom</label>
-                                    <p>{{ selectedUtilisateur?.prenom || 'Non renseigné' }}</p>
+                                    <p>{{ selectedUser?.prenom || 'Non renseigné' }}</p>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Contact</label>
-                                    <p>{{ selectedUtilisateur?.contact || 'Non renseigné' }}</p>
+                                    <p>{{ selectedUser?.telephone || 'Non renseigné' }}</p>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Email</label>
-                                    <p>{{ selectedUtilisateur?.email || 'Non renseigné' }}</p>
+                                    <p>{{ selectedUser?.email || 'Non renseigné' }}</p>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Rôle</label>
-                                    <p>{{ selectedUtilisateur?.role || 'Non renseigné' }}</p>
+                                    <p>{{ selectedUser?.role?.nomRole || 'Non renseigné' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -113,27 +116,23 @@
             <div class="card-body">
                 <form class="row g-3 align-items-end">
                     <div class="col-md-3">
-                        <label for="filterNom" class="form-label">Nom & Prénom</label>
-                        <input type="text" class="form-control" id="filterNom" placeholder="Rechercher un nom">
+                        <label for="filterNom" class="form-label">Nom</label>
+                        <input type="text" class="form-control" id="filterNom" placeholder="Rechercher un nom" v-model="filterNom">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterPrenom" class="form-label">Prénom</label>
+                        <input type="text" class="form-control" id="filterPrenom" placeholder="Rechercher un prénom" v-model="filterPrenom">
                     </div>
                     <div class="col-md-2">
                         <label for="filterContact" class="form-label">Contact</label>
-                        <input type="text" class="form-control" id="filterContact" placeholder="Contact">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="filterStructure" class="form-label">Email</label>
-                        <input type="text" class="form-control" id="filterEmail" placeholder="Email">
+                        <input type="text" class="form-control" id="filterContact" placeholder="Contact" v-model="filterContact">
                     </div>
                     <div class="col-md-2">
-                        <label for="filterStatut" class="form-label">Role</label>
-                        <select class="form-control" id="filterStatut">
-                            <option value="">Tous</option>
-                            <option value="actif">Admin</option>
-                            <option value="inactif">Superadmin</option>
-                        </select>
+                        <label for="filterEmail" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="filterEmail" placeholder="Email" v-model="filterEmail">
                     </div>
                     <div class="col-md-2">
-                        <button type="button" class="btn btn-primary w-100">Filtrer</button>
+                        <button type="button" class="btn btn-primary w-100" @click="onSearch">Filtrer</button>
                     </div>
                 </form>
             </div>
@@ -159,42 +158,34 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Ahossi</td>
-                                <td>Judith</td>
-                                <td>97000001</td>
-                                <td>judith@example.com</td>
-                                <td><span class="badge badge-success">Admin</span></td>
+                            <tr v-for="(item, index) in filterItems" :key="index">
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ item?.nom }}</td>
+                                <td>{{ item?.prenom }}</td>
+                                <td>{{ item?.telephone }}</td>
+                                <td>{{ item?.email }}</td>
                                 <td>
-                                    <div class="btn-group">
-                                        <!-- AJOUT : Ajout de @click pour le bouton Supprimer -->
-                                        <button class="btn btn-primary" @click="updateUtilisateur({ id: 1, nom: 'Ahossi', prenom: 'Judith', contact: '97000001', email: 'judith@example.com', role: 'admin' })"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger" @click="deleteUtilisateur({ id: 1, nom: 'Ahossi', prenom: 'Judith' })"><i class="fas fa-trash"></i></button>
-                                        <button class="btn btn-info" @click="showDetails({ id: 1, nom: 'Ahossi', prenom: 'Judith', contact: '97000001', email: 'judith@example.com', role: 'Admin' })"><i class="fas fa-eye"></i></button>
-                                        <!-- FIN AJOUT -->
-                                    </div>
+                                    <span class="badge badge-success" v-if="item?.role?.nomRole">{{ item?.role?.nomRole }}</span>
+                                    <span class="badge badge-secondary" v-else>Aucun rôle</span>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Kouassi</td>
-                                <td>David</td>
-                                <td>97000002</td>
-                                <td>kouassi.david@example.com</td>
-                                <td><span class="badge badge-info">Superadmin</span></td>
                                 <td>
-                                    <div class="btn-group">
-                                        <!-- AJOUT : Ajout de @click pour le bouton Supprimer -->
-                                        <button class="btn btn-primary" @click="updateUtilisateur({ id: 2, nom: 'Kouassi', prenom: 'David', contact: '97000002', email: 'kouassi.david@example.com', role: 'superadmin' })"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-danger" @click="deleteUtilisateur({ id: 2, nom: 'Kouassi', prenom: 'David' })"><i class="fas fa-trash"></i></button>
-                                        <button class="btn btn-info" @click="showDetails({ id: 2, nom: 'Kouassi', prenom: 'David', contact: '97000002', email: 'kouassi.david@example.com', role: 'Superadmin' })"><i class="fas fa-eye"></i></button>
-                                        <!-- FIN AJOUT -->
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-primary" @click="updateUser(item)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger" @click="deleteUser(item.id)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-info" @click="showDetails(item)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <PaginationNew :currentPage="items.number + 1" :totalPages="items.totalPages"
+                            :totalItems="items.totalElements || 0" :onPageChange="onSearch" />
                 </div>
             </div>
         </div>
@@ -202,43 +193,134 @@
 </template>
 
 <script>
-import { ElNotification } from "element-plus"; // AJOUT : Importation d’ElNotification
-import Swal from 'sweetalert2'; // AJOUT : Importation de SweetAlert2
+import { mapGetters } from "vuex";
+import { ElNotification } from "element-plus";
+import Swal from 'sweetalert2'
+import PaginationNew from "../../components/PaginationNew.vue";
 
 export default {
-    data() {
-        return {
-            selectedUtilisateur: null,
-            form: {
-                nom: "",
-                prenom: "",
-                contact: "",
-                email: "",
-                role: "admin"
-            }
-        };
+    components: {
+        PaginationNew
+    },
+    name: 'users',
+    data: () => ({
+        form: {
+            nom: "",
+            prenom: "",
+            telephone: "",
+            email: "",
+            role: null
+        },
+        loading: false,
+        modalInstance: null,
+        filterNom: "",
+        filterPrenom: "",
+        filterContact: "",
+        filterEmail: "",
+        selectedUser: null,
+        rolesList: []
+    }),
+    computed: {
+        ...mapGetters({ items: 'users/all' }),
+        filterItems() {
+            return this.items.content;
+        }
     },
     methods: {
+        async fetchRoles() {
+            try {
+                const res = await this.$store.dispatch('roles/getAllP', { page: 0, size: 100 });
+                this.rolesList = res.content || [];
+            } catch (error) {
+                console.error('Erreur lors du chargement des rôles:', error);
+            }
+        },
+        showDetails(item) {
+            this.selectedUser = item;
+            document.body.appendChild(document.getElementById('utilisateurDetailsModal'));
+            const modal = new bootstrap.Modal(document.getElementById('utilisateurDetailsModal'));
+            modal.show();
+        },
+        resetForm() {
+            this.form = {
+                nom: "",
+                prenom: "",
+                telephone: "",
+                email: "",
+                role: null
+            };
+            this.openModal();
+        },
         openModal() {
             document.body.appendChild(document.getElementById('utilisateurModal'));
             const modal = new bootstrap.Modal(document.getElementById('utilisateurModal'));
             modal.show();
         },
-        updateUtilisateur(item) {
-            this.form = { ...item };
-            this.openModal();
+        closeModal() {
+            const modalElement = document.getElementById('utilisateurModal');
+            const hiddenHandler = () => {
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.style.display = 'none';
+                }
+            };
+            modalElement.addEventListener('hidden.bs.modal', hiddenHandler);
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
         },
-        showDetails(item) {
-            this.selectedUtilisateur = item;
-            document.body.appendChild(document.getElementById('utilisateurDetailsModal'));
-            const modal = new bootstrap.Modal(document.getElementById('utilisateurDetailsModal'));
-            modal.show();
+        onSearch(offset, size = 10) {
+            const params = {
+                page: offset - 1,
+                size: size || 10,
+                sort: "id,desc",
+                nom: this.filterNom,
+                prenom: this.filterPrenom,
+                telephone: this.filterTelephone,
+                email: this.filterEmail
+            };
+            this.$store.dispatch('users/getAllP', params)
+                .then((response) => {
+                });
         },
-        // AJOUT : Méthode pour gérer la suppression d’un utilisateur
-        async deleteUtilisateur(item) {
+        async addUser() {
+            if (!this.form.nom || !this.form.prenom || !this.form.email) {
+                ElNotification({
+                    title: 'Erreur',
+                    message: 'Veuillez remplir tous les champs obligatoires.',
+                    type: 'error',
+                    duration: 3000
+                });
+                return;
+            }
+
+            this.loading = true;
+            try {
+                await this.$store.dispatch('users/create', this.form);
+                ElNotification({
+                    title: 'Succès',
+                    message: this.form.id ? 'Modification effectuée avec succès.' : 'Ajout effectué avec succès.',
+                    type: 'success',
+                    duration: 3000
+                });
+                this.closeModal();
+                this.onSearch();
+                this.resetForm();
+            } catch (error) {
+                console.error('Erreur lors de l\'ajout/modification de l\'utilisateur:', error);
+                ElNotification({
+                    title: 'Erreur',
+                    message: 'Une erreur est survenue lors de l\'opération.',
+                    type: 'error',
+                    duration: 3000
+                });
+            } finally {
+                this.loading = false;
+            }
+        },
+        async deleteUser(userId) {
             const result = await Swal.fire({
                 title: 'Êtes-vous sûr ?',
-                text: `Voulez-vous vraiment supprimer l’utilisateur "${item.nom} ${item.prenom}" ? Cette action est irréversible !`,
+                text: "Cette action est irréversible !",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -248,44 +330,34 @@ export default {
             });
             if (result.isConfirmed) {
                 try {
-                    // Simulation de la suppression (pas de Vuex, données statiques)
-                    console.log(`Suppression de l’utilisateur avec ID: ${item.id}`);
+                    await this.$store.dispatch('users/del', userId);
                     ElNotification({
                         title: 'Succès',
-                        message: `L’utilisateur "${item.nom} ${item.prenom}" a été supprimé avec succès.`,
+                        message: 'Suppression effectuée avec succès.',
                         type: 'success',
                         duration: 3000
                     });
+                    this.onSearch();
                 } catch (error) {
                     console.error('Erreur lors de la suppression :', error);
                     ElNotification({
                         title: 'Erreur',
-                        message: 'Impossible de supprimer l’utilisateur.',
-                        type: 'error',
-                        duration: 3000
+                        message: 'Impossible de supprimer.',
+                        type: 'error'
                     });
                 }
             }
         },
-        // FIN AJOUT
-    },
-    setup() {
-        const openModal = () => {
-            document.body.appendChild(document.getElementById('utilisateurModal'));
-            const modal = new bootstrap.Modal(document.getElementById('utilisateurModal'));
-            modal.show();
+        updateUser(user) {
+            this.form = user
+            this.openModal();
         }
-
-        // Function to handle adding a new post
-        const addPost = () => {
-            console.log("New post added");
-        };
-
-        return {
-            addPost
-        };
+    },
+    created() {
+        this.onSearch();
+        this.fetchRoles();
     }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped></style> 
