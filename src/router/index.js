@@ -11,6 +11,9 @@ import Affectation from "@/views/pages/Affectation.vue";
 import Users from "@/views/pages/Users.vue";
 import Role from "@/views/pages/Role.vue";
 import Permission from "@/views/pages/Permission.vue";
+import Zone from "@/views/pages/Zone.vue";
+import Ville from "@/views/pages/Ville.vue";
+import Quartier from "@/views/pages/Quartier.vue";
 const routes = [
     {
         path: "/dashboard",
@@ -75,6 +78,24 @@ const routes = [
                 path: "/dashboard/permissions",
                 name: "Permission",
                 component: Permission,
+                meta: { isAuthenticated: false },
+            },
+            {
+                path: "/dashboard/zones",
+                name: "Zone",
+                component: Zone,
+                meta: { isAuthenticated: false },
+            },
+            {
+                path: "/dashboard/villes",
+                name: "Ville",
+                component: Ville,
+                meta: { isAuthenticated: false },
+            },
+            {
+                path: "/dashboard/quartiers",
+                name: "Quartier",
+                component: Quartier,
                 meta: { isAuthenticated: false },
             },
         ],

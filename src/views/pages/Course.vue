@@ -99,13 +99,37 @@
                     <option v-for="livreur in livreurs" :key="livreur.id" :value="livreur"> 
                       {{ livreur.nom }} {{ livreur.prenom }}
                     </option>
+                  </select> 
+                </div>
+
+
+                
+                
+                <!-- Sélection Ville et Quartier pour l'adresse de livraison -->
+                <div class="col-6 mb-3 mt-3">
+                  <label>Ville de livraison</label>
+                  <select class="form-control" v-model="selectedVille" @change="onVilleChange">
+                    <option value="">Sélectionner une ville</option>
+                    <option v-for="ville in villesList" :key="ville.id" :value="ville">
+                      {{ ville.nom }} ({{ ville.zone?.destination }})
+                    </option>
                   </select>
                 </div>
-                <div class="col-6 mb-3">
+                <div class="col-6 mb-3 mt-3">
+                  <label>Quartier de livraison</label>
+                  <select class="form-control" v-model="selectedQuartier" @change="onQuartierChange" :disabled="!selectedVille">
+                    <option value="">Sélectionner un quartier</option>
+                    <option v-for="quartier in quartiersList" :key="quartier.id" :value="quartier">
+                      {{ quartier.nom }}
+                    </option>
+                  </select>
+                </div>
+                
+                <div class="col-6 mb-3 mt-3">
                   <label>Adresse de départ</label>
                   <input type="text" class="form-control" v-model="form.adresseDepart" placeholder="Adresse de départ" />
                 </div>
-                <div class="col-6 mb-3">
+                <div class="col-6 mb-3 mt-3">
                   <label>Adresse de livraison</label>
                   <input type="text" class="form-control" v-model="form.adresseLivraison" placeholder="Adresse de livraison" />
                 </div>
@@ -171,136 +195,92 @@
     </div>
 
     <!-- Modale détails -->
-    <div class="modal fade" id="courseDetailsModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="courseDetailsLabel"
-      aria-hidden="true" style="backdrop-filter: blur(10px);">
+    <div class="modal fade" id="courseDetailsModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="courseDetailsLabel" aria-hidden="true" style="backdrop-filter: blur(10px);">
       <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0">
-          <div class="modal-header border-0 pb-0 align-items-start">
-            <h5 class="mb-0" id="courseDetailsLabel">Détails de la Course</h5>
+        <div class="modal-content border-0 shadow-lg rounded-4">
+          <div class="modal-header bg-primary text-white rounded-top-4">
+            <h5 class="mb-0" id="courseDetailsLabel"><i class="bi bi-truck"></i> Détails de la Course</h5>
             <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">×</span>
             </button>
           </div>
+
           <div class="modal-body">
-            <div class="row">
-              <div class="col-6 mb-3">
-                <label class="form-label">Client</label>
-                <p>{{ selectedCourse?.client?.nom }} {{ selectedCourse?.client?.prenom }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Livreur</label>
-                <p>{{ selectedCourse?.livreur?.nom }} {{ selectedCourse?.livreur?.prenom }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Adresse de départ</label>
-                <p>{{ selectedCourse?.adresseDepart || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Adresse de livraison</label>
-                <p>{{ selectedCourse?.adresseLivraison || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Montant total</label>
-                <p>{{ selectedCourse?.montantTotal || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Statut Paiement</label>
-                <p>{{ selectedCourse?.statutPaiement || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Statut Course</label>
-                <p>{{ selectedCourse?.statutCourse || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Type Course</label>
-                <p>{{ selectedCourse?.typeCourse || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Type Paiement</label>
-                <p>{{ selectedCourse?.typePaiement || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Date & Heure Départ</label>
-                <p>{{ formatDate(selectedCourse?.dateHeureCommande) || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Date & Heure Livraison</label>
-                <p>{{ formatDate(selectedCourse?.dateHeureLivraison) || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Nom Destinataire</label>
-                <p>{{ selectedCourse?.nomDestinataire || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Frais de Livraison</label>
-                <p>{{ selectedCourse?.fraisLivraison || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Règlement</label>
-                <p>{{ selectedCourse?.reglement || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Frais à Restituer</label>
-                <p>{{ selectedCourse?.fraisRestituer || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Téléphone Destinataire</label>
-                <p>{{ selectedCourse?.telephoneDestinataire || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-12 mb-3">
-                <label class="form-label">Détail Course</label>
-                <p>{{ selectedCourse?.commentaire || 'Non renseigné' }}</p>
+            <!-- Section infos principales -->
+            <div class="p-3 mb-3 bg-light rounded-3">
+              <div class="row">
+                <div class="col-md-6 mb-2"><strong>Client :</strong> {{ selectedCourse?.client?.nom }} {{ selectedCourse?.client?.prenom }}</div>
+                <div class="col-md-6 mb-2"><strong>Livreur :</strong> {{ selectedCourse?.livreur?.nom }} {{ selectedCourse?.livreur?.prenom }}</div>
+                <div class="col-md-6 mb-2"><i class="bi bi-geo-alt"></i> <strong>Départ :</strong> {{ selectedCourse?.adresseDepart || 'Non renseigné' }}</div>
+                <div class="col-md-6 mb-2"><i class="bi bi-geo-alt-fill"></i> <strong>Livraison :</strong> {{ selectedCourse?.adresseLivraison || 'Non renseigné' }}</div>
               </div>
             </div>
 
-            <h5 class="mt-4">Moto Utilisé</h5>
-            <div class="row">
-              <div class="col-6 mb-3">
-                <label class="form-label">Marque</label>
-                <p>{{ selectedCourse?.moto?.marque || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Modele</label>
-                <p>{{ selectedCourse?.moto?.modele || 'Non renseigné' }}</p>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Matricule</label>
-                <p>{{ selectedCourse?.moto?.matricule || 'Non renseigné' }}</p>
+            <!-- Section paiement / statut -->
+            <div class="p-3 mb-3 bg-light rounded-3">
+              <div class="row">
+                <div class="col-md-6 mb-2"><i class="bi bi-cash"></i> <strong>Montant :</strong> {{ selectedCourse?.montantTotal || 'Non renseigné' }}</div>
+                <div class="col-md-6 mb-2"><strong>Statut Paiement :</strong> {{ selectedCourse?.statutPaiement || 'Non renseigné' }}</div>
+                <div class="col-md-6 mb-2"><strong>Statut Course :</strong> {{ selectedCourse?.statutCourse || 'Non renseigné' }}</div>
+                <div class="col-md-6 mb-2"><strong>Type Course :</strong> {{ selectedCourse?.typeCourse || 'Non renseigné' }}</div>
               </div>
             </div>
 
-            <h5 class="mt-2">Temps de Course</h5>
-            <div class="row">
-              <div class="col-6 mb-3">
-                <p>
-                  <span v-if="selectedCourse?.dateHeureCommande && selectedCourse?.dateHeureLivraison">
-                    {{ getCourseDuration(selectedCourse.dateHeureCommande, selectedCourse.dateHeureLivraison) }}
-                  </span>
-                  <span v-else>
-                    Non renseigné
-                  </span>
-                </p>
+            <!-- Section destinataire -->
+            <div class="p-3 mb-3 bg-light rounded-3">
+              <div class="row">
+                <div class="col-md-6 mb-2"><strong>Destinataire :</strong> {{ selectedCourse?.nomDestinataire || 'Non renseigné' }}</div>
+                <div class="col-md-6 mb-2"><strong>Tél :</strong> {{ selectedCourse?.telephoneDestinataire || 'Non renseigné' }}</div>
+                <div class="col-md-6 mb-2"><strong>Frais Livraison :</strong> {{ selectedCourse?.fraisLivraison || 'Non renseigné' }}</div>
+                <div class="col-md-6 mb-2"><strong>Frais à restituer :</strong> {{ selectedCourse?.fraisRestituer || 'Non renseigné' }}</div>
               </div>
             </div>
 
-            <h5 v-if="selectedCourse?.statutCourse === 'EN_COURS' || selectedCourse?.statutPaiement === 'EN_ATTENTE'">Actions</h5>
-            <div class="btn-group" role="group" aria-label="Basic example">
-              <button type="button" v-if="selectedCourse?.statutCourse === 'EN_COURS'" @click="marquerTerminer(selectedCourse.id)" class="btn btn-primary">
-                <i class="fas fa-check"></i> Marquer comme terminer
+            <!-- Section moto -->
+            <div class="p-3 mb-3 bg-light rounded-3">
+              <h6><i class="bi bi-bicycle"></i> Moto Utilisée</h6>
+              <div class="row">
+                <div class="col-md-4 mb-2"><strong>Marque :</strong> {{ selectedCourse?.moto?.marque || 'Non renseigné' }}</div>
+                <div class="col-md-4 mb-2"><strong>Modèle :</strong> {{ selectedCourse?.moto?.modele || 'Non renseigné' }}</div>
+                <div class="col-md-4 mb-2"><strong>Matricule :</strong> {{ selectedCourse?.moto?.matricule || 'Non renseigné' }}</div>
+              </div>
+            </div>
+
+            <!-- Section temps -->
+            <div class="p-3 mb-3 bg-light rounded-3">
+              <h6><i class="bi bi-clock"></i> Temps de Course</h6>
+              <p class="mb-0">
+                <span v-if="selectedCourse?.dateHeureCommande && selectedCourse?.dateHeureLivraison">
+                  {{ getCourseDuration(selectedCourse.dateHeureCommande, selectedCourse.dateHeureLivraison) }}
+                </span>
+                <span v-else>Non renseigné</span>
+              </p>
+            </div>
+
+            <!-- Commentaire -->
+            <div class="p-3 mb-3 bg-light rounded-3">
+              <strong>Détails :</strong>
+              <p>{{ selectedCourse?.commentaire || 'Non renseigné' }}</p>
+            </div>
+
+            <!-- Actions -->
+            <div v-if="selectedCourse?.statutCourse === 'EN_COURS' || selectedCourse?.statutPaiement === 'EN_ATTENTE'" class="text-center">
+              <button v-if="selectedCourse?.statutCourse === 'EN_COURS'" @click="marquerTerminer(selectedCourse.id)" class="btn btn-primary mx-2">
+                <i class="fas fa-check"></i> Marquer comme terminé
               </button>
-              <button type="button" v-if="selectedCourse?.statutPaiement === 'EN_ATTENTE'" @click="payementEffectuer(selectedCourse.id)" class="btn btn-success">
-                <i class="fas fa-check"></i> Paiement Effectué
+              <button v-if="selectedCourse?.statutPaiement === 'EN_ATTENTE'" @click="payementEffectuer(selectedCourse.id)" class="btn btn-success mx-2">
+                <i class="fas fa-money-bill-wave"></i> Paiement effectué
               </button>
             </div>
           </div>
+
           <div class="modal-footer border-0 pt-0">
-            <div class="text-center mx-auto">
-              <button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i class="bi-x"></i> Fermer</button>
-            </div>
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i class="bi-x"></i> Fermer</button>
           </div>
         </div>
       </div>
     </div>
+
 
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -494,7 +474,12 @@ export default {
         livreurs: [],
         loading: false,
         modalInstance: null,
-        selectedCourse: null
+        selectedCourse: null,
+        // Données pour la recherche d'adresse
+        selectedVille: null,
+        selectedQuartier: null,
+        villesList: [],
+        quartiersList: []
     }),
     computed: {
         ...mapGetters({ items: 'courses/all' }),
@@ -526,6 +511,11 @@ export default {
                 reglement: '',
                 fraisRestituer: ''
             };
+            // Réinitialiser les sélections d'adresse
+            this.selectedVille = null;
+            this.selectedQuartier = null;
+            this.quartiersList = [];
+            this.form.montantTotal = '';
             this.openModal();
         },
         openModal() {
@@ -609,6 +599,51 @@ export default {
             this.$store.dispatch('courses/getAllP', params)
                 .then((response) => {
                 });
+        },
+        // Méthodes pour la recherche d'adresse
+        async fetchVilles() {
+            try {
+                const res = await this.$store.dispatch('villes/getAllP', { page: 0, size: 100 });
+                this.villesList = res.content || [];
+            } catch (error) {
+                console.error('Erreur lors du chargement des villes:', error);
+            }
+        },
+        async onVilleChange() {
+            this.selectedQuartier = null;
+            this.quartiersList = [];
+            this.form.adresseLivraison = '';
+            this.form.montantTotal = '';
+            
+            if (this.selectedVille) {
+                try {
+                    const res = await this.$store.dispatch('quartiers/getByVille', this.selectedVille.id);
+                    this.quartiersList = res || [];
+                } catch (error) {
+                    console.error('Erreur lors du chargement des quartiers:', error);
+                    ElNotification({
+                        title: 'Erreur',
+                        message: 'Impossible de charger les quartiers pour cette ville.',
+                        type: 'error',
+                        duration: 3000
+                    });
+                }
+            }
+        },
+        onQuartierChange() {
+            if (this.selectedQuartier && this.selectedVille) {
+                // Construire l'adresse complète : Quartier, Ville, Zone
+                const adresse = `${this.selectedQuartier.nom}, ${this.selectedVille.nom} (${this.selectedVille.zone?.destination})`;
+                this.form.adresseLivraison = adresse;
+                
+                // Remplir automatiquement le montant total avec le tarif de la zone
+                if (this.selectedVille.zone && this.selectedVille.zone.tarif) {
+                    this.form.montantTotal = this.selectedVille.zone.tarif;
+                }
+            } else {
+                this.form.adresseLivraison = '';
+                this.form.montantTotal = '';
+            }
         },
         async addCourse() {
             this.loading = true;
@@ -784,6 +819,7 @@ export default {
         this.onSearch();
         this.loadClients();
         this.getAllLivreursActive();
+        this.fetchVilles();
     }
 }
 </script>

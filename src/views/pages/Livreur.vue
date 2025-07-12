@@ -191,9 +191,8 @@
                                 </div>
                             </div>
                         </div>
-                        <h4>informations livreurs</h4>
-                        <!-- 
-                        <pre>{{ livreur }}</pre> -->
+                        <h4>Informations Livreurs</h4>
+                     
 
                         <div class="row mb-4">
                             <div class="col-md-6">
@@ -209,6 +208,13 @@
                                 <p><strong>Situation Matrimoniale:</strong> {{ livreur.situationMatrimoniale }}</p>
                                 <p><strong>Type de Contrat:</strong> {{ livreur.typeLivreur }}</p>
                                 <p><strong>Statut:</strong> {{ livreur.statut }}</p>
+                            </div>
+                        </div>
+
+                        <h4>Pourcentage de commission</h4>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <p><strong>Pourcentage de commission:</strong> {{ livreur.pourcentageCommission }}</p>
                             </div>
                         </div>
 
@@ -269,6 +275,7 @@
                                         <td>{{ course.immatriculation }}</td>
                                         <td>{{ course.marque }}</td>
                                         <td>{{ course.modele }}</td>
+                                        <td>Du {{ formatDateMoment(course.dateDebut) }} au {{ formatDateMoment(course.dateFin) }}</td>
                                     </tr>
                                     <tr v-if="!livreurAffectation || livreurAffectation.length === 0">
                                         <td colspan="7" class="text-center text-muted">Aucune affectation</td>
@@ -451,6 +458,8 @@ const FilePond = vueFilePond(
 );
  
 import { VUE_APP_API_URL } from "@/config/config";
+import moment from "moment";
+
 
 
 export default {
@@ -683,6 +692,9 @@ export default {
             if (!dateStr) return '-';
             const date = new Date(dateStr);
             return date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        },
+        formatDateMoment(date) {
+            return date ? moment(date).format('LL') : '';
         },
         badgeClass(status) {
             switch (status) {

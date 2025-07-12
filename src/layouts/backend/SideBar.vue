@@ -55,6 +55,9 @@
                     <h6 class="collapse-header">Gestion Opérationnelle</h6>
                     <router-link class="collapse-item" to="/dashboard/livreur">Livreurs</router-link>
                     <router-link class="collapse-item" to="/dashboard/moto">Moto</router-link>
+                    <router-link class="collapse-item" to="/dashboard/zones">Zones</router-link>
+                    <router-link class="collapse-item" to="/dashboard/villes">Villes</router-link>
+                    <router-link class="collapse-item" to="/dashboard/quartiers">Quartiers</router-link>
 <!--                     <router-link class="collapse-item" to="/dashboard/modepaiement">Mode Paiement</router-link>
  -->                    <router-link class="collapse-item" to="/dashboard/affectation">Historique Affectation</router-link>
                 </div>

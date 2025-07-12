@@ -5,6 +5,9 @@ import motos from './modules/motos';
 import livreurs from './modules/livreurs';
 import affectations from './modules/affectations';
 import courses from './modules/courses';
+import zones from './modules/zones';
+import villes from './modules/villes';
+import quartiers from './modules/quartiers';
 
 export default createStore({
   modules: {
@@ -13,6 +16,9 @@ export default createStore({
     motos,
     livreurs,
     affectations,
-    courses
+    courses,
+    zones,
+    villes,
+    quartiers
   }
 });
