@@ -116,9 +116,15 @@
                                             name="file"
                                             :server="uploadConfig"
                                             accepted-file-types="image/*"
+                                            max-file-size="5MB"
                                             label-idle="Déposez votre image ou cliquez pour sélectionner"
+                                            label-file-processing="Téléchargement en cours..."
+                                            label-file-processing-complete="Téléchargement terminé"
+                                            label-file-processing-error="Erreur de téléchargement"
                                             @processfile="UploadResponse"
+                                            @error="UploadResponse"
                                         />
+                                        <small class="form-text text-muted">Formats acceptés: JPG, PNG, GIF. Taille max: 5MB</small>
                                     </div>
                                     
                                     
@@ -142,164 +148,165 @@
             </div>
         </div>
 
-        <div class="modal fade" id="detailLivreur" data-bs-backdrop="static" tabindex="-1"
-            aria-labelledby="livreurLabel" aria-hidden="true" style="backdrop-filter: blur(10px);">
+        <div class="modal fade" id="detailLivreur" data-bs-backdrop="static" tabindex="-1" aria-labelledby="livreurLabel" aria-hidden="true" style="backdrop-filter: blur(10px);">
             <div class="modal-dialog modal-xl modal-dialog-centered">
-                <div class="modal-content border-0">
+                <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-primary text-white rounded-top-4">
+                    <h5 class="mb-0" id="livreurLabel">
+                    <i class="bi bi-person"></i> Détail livreur : {{ livreur.nom }} {{ livreur.prenom }}
+                    </h5>
+                    <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
 
-                    <div class="modal-header border-0 pb-0 align-items-start">
-                        <h5 class="mb-0" id="livreurLabel">Détail livreur : {{ livreur.nom }} {{ livreur.prenom }}</h5>
-                        <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
+                <div class="modal-body">
+                                         <!-- Photo de profil -->
+                     <div class="text-center mb-4">
+                         <img 
+                             :src="getPhotoUrl(livreur.fichier?.id)" 
+                             :alt="`Photo de ${livreur.nom} ${livreur.prenom}`" 
+                             class="rounded-circle shadow-sm" 
+                             style="width: 150px; height: 150px; object-fit: cover;"
+                             @error="handleImageError"
+                         >
+                         <h4 class="mt-3">{{ livreur.nom }} {{ livreur.prenom }}</h4>
+                     </div>
+
+                    <!-- Statistiques -->
+                    <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center shadow-sm border-0">
+                        <div class="card-body">
+                            <h6 class="text-muted">Total Courses</h6>
+                            <h4>{{ livreursStat.totalCourses ?? 0 }}</h4>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center shadow-sm border-0">
+                        <div class="card-body">
+                            <h6 class="text-muted">Courses Livrées</h6>
+                            <h4>{{ livreursStat.count_LIVREE ?? 0 }}</h4>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center shadow-sm border-0">
+                        <div class="card-body">
+                            <h6 class="text-muted">Courses En Cours</h6>
+                            <h4>{{ livreursStat.count_EN_COURS ?? 0 }}</h4>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center shadow-sm border-0">
+                        <div class="card-body">
+                            <h6 class="text-muted">Montant Total</h6>
+                            <h4>{{ livreursStat.montantTotal?.toLocaleString() ?? 0 }} F CFA</h4>
+                        </div>
+                        </div>
+                    </div>
                     </div>
 
-                    <div class="modal-body">
-                        <!-- Statistiques -->
-
-                        <div class="row mb-4">
-                            <div class="col-md-3 mb-3">
-                                <div class="card text-center shadow-sm">
-                                    <div class="card-body">
-                                        <h6>Total Courses</h6>
-                                        <h4>{{ livreursStat.totalCourses ?? 0 }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card text-center shadow-sm">
-                                    <div class="card-body">
-                                        <h6>Courses Livrées</h6>
-                                        <h4>{{ livreursStat.count_LIVREE ?? 0 }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card text-center shadow-sm">
-                                    <div class="card-body">
-                                        <h6>Courses En Cours</h6>
-                                        <h4>{{ livreursStat.count_EN_COURS ?? 0 }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card text-center shadow-sm">
-                                    <div class="card-body">
-                                        <h6>Montant Total</h6>
-                                        <h4>{{ livreursStat.montantTotal?.toLocaleString() ?? 0 }} F CFA</h4>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Informations personnelles -->
+                    <div class="p-3 mb-4 bg-light rounded-3 shadow-sm">
+                    <h5><i class="bi bi-info-circle"></i> Informations Personnelles</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                        <p><strong>Email :</strong> {{ livreur.email }}</p>
+                        <p><strong>Contact :</strong> {{ livreur.telephone }}</p>
+                        <p><strong>Date de Naissance :</strong> {{ formatDate(livreur.dateNaissance) }}</p>
+                        <p><strong>Situation Matrimoniale :</strong> {{ livreur.situationMatrimoniale }}</p>
+                        <p><strong>Statut :</strong> {{ livreur.statut }}</p>
                         </div>
-                        <h4>Informations Livreurs</h4>
-                     
-
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <p><strong>Nom:</strong> {{ livreur.nom }}</p>
-                                <p><strong>Prénom:</strong> {{ livreur.prenom }}</p>
-                                <p><strong>Email:</strong> {{ livreur.email }}</p>
-                                <p><strong>Contact:</strong> {{ livreur.telephone }}</p>
-                                <p><strong>Date de Naissance:</strong> {{ formatDate(livreur.dateNaissance) }}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Type de Pièce:</strong> {{ livreur.typePiece }}</p>
-                                <p><strong>N° de Pièce d'Identité:</strong> {{ livreur.numeroPieceIdentite }}</p>
-                                <p><strong>Situation Matrimoniale:</strong> {{ livreur.situationMatrimoniale }}</p>
-                                <p><strong>Type de Contrat:</strong> {{ livreur.typeLivreur }}</p>
-                                <p><strong>Statut:</strong> {{ livreur.statut }}</p>
-                            </div>
+                        <div class="col-md-6">
+                        <p><strong>Type de Pièce :</strong> {{ livreur.typePiece }}</p>
+                        <p><strong>N° Pièce :</strong> {{ livreur.numeroPieceIdentite }}</p>
+                        <p><strong>Type de Contrat :</strong> {{ livreur.typeLivreur }}</p>
+                        <p><strong>Pourcentage Commission :</strong> {{ livreur.pourcentageCommission }}%</p>
                         </div>
+                    </div>
+                    </div>
 
-                        <h4>Pourcentage de commission</h4>
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <p><strong>Pourcentage de commission:</strong> {{ livreur.pourcentageCommission }}</p>
-                            </div>
-                        </div>
+                    <!-- Liste des courses -->
+                    <div class="p-3 mb-4 bg-light rounded-3 shadow-sm">
+                    <h5><i class="bi bi-truck"></i> Liste des Courses</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                            <th>#</th>
+                            <th>Commande</th>
+                            <th>Date</th>
+                            <th>Départ</th>
+                            <th>Destination</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(course, index) in livreurCourse" :key="course.id">
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ course.numeroCommande }}</td>
+                            <td>{{ formatDate(course.dateHeureCommande) }}</td>
+                            <td>{{ course.adresseDepart }}</td>
+                            <td>{{ course.adresseLivraison }}</td>
+                            <td>{{ course.montantTotal?.toLocaleString() }} F CFA</td>
+                            <td>
+                                <span :class="badgeClass(course.statutCourse)">
+                                {{ course.statutCourse }}
+                                </span>
+                            </td>
+                            </tr>
+                            <tr v-if="!livreurCourse || livreurCourse.length === 0">
+                            <td colspan="7" class="text-center text-muted">Aucune course trouvée</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                    </div>
 
-                        <h4>Liste des Courses</h4>
-
-                        <!-- Tableau des courses -->
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Commande</th>
-                                        <th>Date</th>
-                                        <th>Départ</th>
-                                        <th>Destination</th>
-                                        <th>Montant</th>
-                                        <th>Statut</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(course, index) in livreurCourse" :key="course.id">
-                                        <td>{{ index + 1 }}</td>
-                                        <td>{{ course.numeroCommande }}</td>
-                                        <td>{{ formatDate(course.dateHeureCommande) }}</td>
-                                        <td>{{ course.adresseDepart }}</td>
-                                        <td>{{ course.adresseLivraison }}</td>
-                                        <td>{{ course.montantTotal?.toLocaleString() }} F CFA</td>
-                                        <td>
-                                            <span :class="badgeClass(course.statutCourse)">
-                                                {{ course.statutCourse }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr v-if="!livreurCourse || livreurCourse.length === 0">
-                                        <td colspan="7" class="text-center text-muted">Aucune course trouvée</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <h4>Liste des Motos affecter au livreur</h4>
-
-                        <!-- Tableau des courses -->
+                    <!-- Liste des motos -->
+                    <div class="p-3 mb-4 bg-light rounded-3 shadow-sm" v-if="livreur.typeLivreur === 'YTS'">
+                        <h5><i class="bi bi-bicycle"></i> Motos Affectées</h5>
                         <div class="table-responsive">
                             <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Nº</th>
-                                        <th>Immatriculation</th>
-                                        <th>Marque</th>
-                                        <th>Modèle</th>
-                                        <th>Periode</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(course, index) in livreurAffectation" :key="course.id">
-                                        <td>{{ index + 1 }}</td>
-                                        <td>{{ course.immatriculation }}</td>
-                                        <td>{{ course.marque }}</td>
-                                        <td>{{ course.modele }}</td>
-                                        <td>Du {{ formatDateMoment(course.dateDebut) }} au {{ formatDateMoment(course.dateFin) }}</td>
-                                    </tr>
-                                    <tr v-if="!livreurAffectation || livreurAffectation.length === 0">
-                                        <td colspan="7" class="text-center text-muted">Aucune affectation</td>
-                                    </tr>
-                                </tbody>
+                            <thead class="table-light">
+                                <tr>
+                                <th>#</th>
+                                <th>Immatriculation</th>
+                                <th>Marque</th>
+                                <th>Modèle</th>
+                                <th>Période</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(course, index) in livreurAffectation" :key="course.id">
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ course.immatriculation }}</td>
+                                <td>{{ course.marque }}</td>
+                                <td>{{ course.modele }}</td>
+                                <td>Du {{ formatDateMoment(course.dateDebut) }} au {{ formatDateMoment(course.dateFin) }}</td>
+                                </tr>
+                                <tr v-if="!livreurAffectation || livreurAffectation.length === 0">
+                                <td colspan="5" class="text-center text-muted">Aucune affectation</td>
+                                </tr>
+                            </tbody>
                             </table>
                         </div>
                     </div>
+                </div>
 
-
-                    <div class="modal-footer border-0 pt-0">
-                        <div class="text-center mx-auto">
-                            <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
-                                <i class="bi-x"></i> Fermer
-                            </button>
-                            <button type="button" @click="addLivreur" class="btn btn-primary ms-2">
-                                <i class="bi-check"></i> Ajouter
-                            </button>
-                        </div>
-                    </div>
-
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                    <i class="bi-x"></i> Fermer
+                    </button>
+                </div>
                 </div>
             </div>
-        </div>
+            </div>
+
 
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -391,6 +398,7 @@
                         <thead>
                             <tr>
                                 <th>Nº</th>
+                                <th>Photo</th>
                                 <th>Nom</th>
                                 <th>Prénom</th>
                                 <th>Contact</th>
@@ -404,6 +412,12 @@
                         <tbody>
                             <tr v-for="(item, index) in filterItems" :key="index">
                                 <td>{{ index + 1 }}</td>
+                                <td>
+                                    <img 
+                                        :src="getPhotoUrl(item.fichier?.id)" 
+                                        
+                                    >
+                                </td>
                                 <td>{{ item.nom }}</td>
                                 <td>{{ item.prenom }}</td>
                                 <td>{{ item.telephone }}</td>
@@ -459,6 +473,7 @@ const FilePond = vueFilePond(
  
 import { VUE_APP_API_URL } from "@/config/config";
 import moment from "moment";
+import defaultAvatar from "@/assets/img/default-avatar.png";
 
 
 
@@ -483,12 +498,13 @@ export default {
             dateFinContrat: "",
             statut: "ACTIF",
             typePiece: "CIP",
-            numeroPieceIdentite: ""
+            numeroPieceIdentite: "",
+            fichier: null
         },
         loading: false,
         modalInstance: null, filterNom: "", filterPrenom: "", filterEmail: "", filterTelephone: "", filterSituationMatrimoniale: "", filterSituationMatrimoniale: "", filterTypeLivreur: "", filterStatut: "", filterTypePiece: "", filterNumeroPiece: "",
         livreurCourse: [], livreursStat: [], livreur: {}, livreurAffectation: [],
-        reponseUpload: null
+        reponseUpload: null,
 
     }),
     computed: {
@@ -501,19 +517,32 @@ export default {
         },
         uploadConfig() {
             return {
-                url: `${VUE_APP_API_URL}fichier/add`,
                 process: {
-                    url: "/",
+                    url: `${VUE_APP_API_URL}fichier/add`,
                     method: "POST",
                     headers: {
                         Authorization: `Bearer ${this.user ? this.user.token : ''}`
                     },
                     withCredentials: false,
                     onload: (response) => {
-                        return response;
+                        try {
+                            const result = JSON.parse(response);
+                            console.log(result);
+                            this.reponseUpload = result;
+                            return result;
+                        } catch (error) {
+                            console.error("Erreur parsing response:", error);
+                            return response;
+                        }
                     },
                     onerror: (error) => {
                         console.error("Erreur d'upload:", error);
+                        ElNotification({
+                            title: 'Erreur',
+                            message: 'Erreur lors du téléchargement de l\'image.',
+                            type: 'error',
+                            duration: 3000
+                        });
                     },
                 },
             };
@@ -521,8 +550,23 @@ export default {
     },
     methods: {
         resetForm() {
-            this.role = {},
-                this.openModal();
+            this.form = {
+                nom: "",
+                prenom: "",
+                telephone: "",
+                adresse: "",
+                email: "",
+                dateNaissance: "",
+                situationMatrimoniale: "CELIBATAIRE",
+                typeLivreur: "INDEPENDANT",
+                dateFinContrat: "",
+                statut: "ACTIF",
+                typePiece: "CIP",
+                numeroPieceIdentite: "",
+                fichier: null
+            };
+            this.reponseUpload = null;
+            this.openModal();
         },
         openModal() {
             // Déplacer le modal 
@@ -573,9 +617,33 @@ export default {
                 })
 
         },
+        UploadResponse(error, file) {
+            if (error) {
+                console.error('Erreur upload:', error);
+                ElNotification({
+                    title: 'Erreur',
+                    message: 'Erreur lors du téléchargement de l\'image.',
+                    type: 'error',
+                    duration: 3000
+                });
+            } else {
+                console.log('Upload réussi:', file);
+                ElNotification({
+                    title: 'Succès',
+                    message: 'Image téléchargée avec succès.',
+                    type: 'success',
+                    duration: 3000
+                });
+            }
+        },
         async addLivreur() {
             this.loading = true;
             try {
+                // Ajouter l'URL de l'image si elle a été uploadée
+                if (this.reponseUpload) {
+                    this.form.fichier = this.reponseUpload;
+                }
+                
                 await this.$store.dispatch('livreurs/create', this.form);
 
                 ElNotification({
@@ -587,14 +655,17 @@ export default {
 
                 this.closeModal();
                 this.onSearch();
+                this.resetForm();
             } catch (error) {
-                console.error('Erreur lors de l\'ajout du client:', error);
+                console.error('Erreur lors de l\'ajout du livreur:', error);
                 ElNotification({
                     title: 'Erreur',
                     message: 'Une erreur est survenue lors de l\'ajout.',
                     type: 'error',
                     duration: 3000
                 });
+            } finally {
+                this.loading = false;
             }
         },
 
@@ -693,6 +764,16 @@ export default {
             const date = new Date(dateStr);
             return date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         },
+        getPhotoUrl(idfile) {
+            if (idfile && this.user && this.user.token) {
+                return `${VUE_APP_API_URL}fichier/download/${idfile}`;
+            }
+            return defaultAvatar;
+        },
+        handleImageError(event) {
+            // En cas d'erreur de chargement de l'image, afficher une image par défaut
+            event.target.src = defaultAvatar;
+        },
         formatDateMoment(date) {
             return date ? moment(date).format('LL') : '';
         },
@@ -725,3 +806,17 @@ export default {
 
 }
 </script>
+
+<style scoped>
+.bg-light {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+}
+.shadow-sm {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+.rounded-3 {
+  border-radius: 1rem;
+}
+
+</style>
