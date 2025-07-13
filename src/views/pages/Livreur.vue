@@ -116,7 +116,7 @@
                                             name="file"
                                             :server="uploadConfig"
                                             accepted-file-types="image/*"
-                                            max-file-size="10MB"
+                                            max-file-size="5MB"
                                             label-idle="Déposez votre image ou cliquez pour sélectionner"
                                             label-file-processing="Téléchargement en cours..."
                                             label-file-processing-complete="Téléchargement terminé"
