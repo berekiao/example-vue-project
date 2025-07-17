@@ -122,7 +122,7 @@
                                             label-file-processing-complete="Téléchargement terminé"
                                             label-file-processing-error="Erreur de téléchargement"
                                             @processfile="UploadResponse"
-                                            @error="UploadResponse"
+                                            
                                         />
                                         <small class="form-text text-muted">Formats acceptés: JPG, PNG, GIF. Taille max: 5MB</small>
                                     </div>
