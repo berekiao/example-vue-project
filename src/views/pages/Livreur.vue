@@ -109,7 +109,23 @@
                                         </select>
                                     </div>
 
-                                    
+                                    <div class="col-12 mb-3">
+                                        <label for="statut" class="form-label">Photo</label>
+                                        <FilePond
+                                            ref="filePond"
+                                            name="file"
+                                            :server="uploadConfig"
+                                            accepted-file-types="image/*"
+                                            max-file-size="5MB"
+                                            label-idle="Déposez votre image ou cliquez pour sélectionner"
+                                            label-file-processing="Téléchargement en cours..."
+                                            label-file-processing-complete="Téléchargement terminé"
+                                            label-file-processing-error="Erreur de téléchargement"
+                                            @processfile="UploadResponse"
+                                            @error="UploadResponse"
+                                        />
+                                        <small class="form-text text-muted">Formats acceptés: JPG, PNG, GIF. Taille max: 5MB</small>
+                                    </div>
                                     
                                     
                                 </div>
